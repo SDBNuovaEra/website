@@ -145,75 +145,66 @@
     on(lb, 'close', function () { lbImg.src = ''; });
   }
 
-  /* ---- Discipline: desktop = rettangoli che si scambiano · mobile = accordion ---- */
+  /* ---- Discipline: desktop = mosaico che ruota di 1 posizione · mobile = accordion ---- */
   var acc = $('#accordion');
   if (acc) {
     var tiles = $$('.tile', acc);
+    var N = tiles.length;
     var mq = window.matchMedia('(min-width: 821px)');
 
-    // Mobile: accordion (tap per espandere + auto-alternanza)
-    var idx = 0;
-    var setActive = function (i) {
-      idx = (i + tiles.length) % tiles.length;
-      tiles.forEach(function (t, j) { t.classList.toggle('active', j === idx); });
+    // Desktop: ogni riquadro avanza di 1 posizione (a turno nel grande, pos0).
+    // Mobile: accordion, si apre uno alla volta. Barra countdown sulla foto grande/aperta.
+    var offset = 0;
+    var ROT_INT = 4200, MOB_INT = 4500;
+    var bars = tiles.map(function (t) { return t.querySelector('.tile-bar span'); });
+    var resetBars = function () { bars.forEach(function (b) { if (b) { b.style.transition = 'none'; b.style.width = '0%'; } }); };
+    var freezeBars = function () { bars.forEach(function (b) { if (b) { var w = getComputedStyle(b).width; b.style.transition = 'none'; b.style.width = w; } }); };
+    var fillFeatured = function (dur) {
+      resetBars();
+      var t = mq.matches ? acc.querySelector('.tile.pos0') : acc.querySelector('.tile.active');
+      var b = t ? t.querySelector('.tile-bar span') : null;
+      if (!b) return;
+      b.getBoundingClientRect();
+      b.style.transition = 'width ' + dur + 'ms linear';
+      b.style.width = '100%';
     };
-    var mobT = null;
-    var stopMob = function () { if (mobT) { clearInterval(mobT); mobT = null; } };
-    var startMob = function () { if (reduce) return; stopMob(); mobT = setInterval(function () { setActive(idx + 1); }, 4500); };
-    tiles.forEach(function (t, i) { on(t, 'click', function () { if (!mq.matches) { setActive(i); startMob(); } }); });
-
-    // Desktop: scambio di posizione tra due riquadri (tecnica FLIP)
-    var swapNodes = function (a, b) {
-      var p = document.createElement('span');
-      a.parentNode.insertBefore(p, a);
-      b.parentNode.insertBefore(a, b);
-      p.parentNode.insertBefore(b, p);
-      p.parentNode.removeChild(p);
-    };
-    var doSwap = function () {
-      var items = $$('.tile', acc);
-      if (items.length < 2) return;
-      var i = Math.floor(Math.random() * items.length);
-      var j = Math.floor(Math.random() * items.length);
-      if (i === j) j = (j + 1) % items.length;
-      var firsts = items.map(function (el) { return el.getBoundingClientRect(); });
-      swapNodes(items[i], items[j]);
-      items.forEach(function (el, k) {
-        var last = el.getBoundingClientRect();
-        var dx = firsts[k].left - last.left, dy = firsts[k].top - last.top;
-        if (dx || dy) {
-          el.style.transition = 'none';
-          el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
-          el.getBoundingClientRect();
-          requestAnimationFrame(function () {
-            el.style.transition = 'transform .6s cubic-bezier(.22,1,.36,1)';
-            el.style.transform = '';
-          });
-        }
+    var layout = function () {
+      tiles.forEach(function (t, i) {
+        for (var p = 0; p < N; p++) t.classList.remove('pos' + p);
+        t.classList.add('pos' + ((i + offset) % N));
       });
     };
-    var swapT = null;
-    var stopSwap = function () { if (swapT) { clearInterval(swapT); swapT = null; } };
-    var startSwap = function () { if (reduce) return; stopSwap(); swapT = setInterval(doSwap, 3200); };
+    var clearPos = function () {
+      tiles.forEach(function (t) { for (var p = 0; p < N; p++) t.classList.remove('pos' + p); });
+    };
+    var rotT = null;
+    var stopRot = function () { if (rotT) { clearInterval(rotT); rotT = null; } freezeBars(); };
+    var startRot = function () { if (reduce) return; stopRot(); fillFeatured(ROT_INT); rotT = setInterval(function () { offset = (offset + 1) % N; layout(); fillFeatured(ROT_INT); }, ROT_INT); };
+
+    var idx = 0;
+    var setActive = function (i) { idx = (i + N) % N; tiles.forEach(function (t, j) { t.classList.toggle('active', j === idx); }); };
+    var mobT = null;
+    var stopMob = function () { if (mobT) { clearInterval(mobT); mobT = null; } };
+    var startMob = function () { if (reduce) return; stopMob(); fillFeatured(MOB_INT); mobT = setInterval(function () { setActive(idx + 1); fillFeatured(MOB_INT); }, MOB_INT); };
+    tiles.forEach(function (t, i) { on(t, 'click', function () { if (!mq.matches) { setActive(i); startMob(); } }); });
 
     var applyMode = function () {
       if (mq.matches) {
         stopMob();
         tiles.forEach(function (t) { t.classList.remove('active'); });
-        startSwap();
+        offset = 0; layout(); startRot();
       } else {
-        stopSwap();
-        tiles.forEach(function (t) { t.style.transform = ''; t.style.transition = ''; acc.appendChild(t); });
-        setActive(0);
-        startMob();
+        stopRot();
+        clearPos(); resetBars();
+        setActive(0); startMob();
       }
     };
     applyMode();
     if (mq.addEventListener) mq.addEventListener('change', applyMode);
-    on(acc, 'mouseenter', function () { if (mq.matches) stopSwap(); });
-    on(acc, 'mouseleave', function () { if (mq.matches) startSwap(); });
+    on(acc, 'mouseenter', function () { if (mq.matches) stopRot(); });
+    on(acc, 'mouseleave', function () { if (mq.matches) startRot(); });
     on(document, 'visibilitychange', function () {
-      if (document.hidden) { stopSwap(); stopMob(); } else { applyMode(); }
+      if (document.hidden) { stopRot(); stopMob(); } else { applyMode(); }
     });
   }
 })();
