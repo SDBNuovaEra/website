@@ -12,6 +12,17 @@
   /* ---- Footer year ---- */
   var y = $('#year'); if (y) y.textContent = new Date().getFullYear();
 
+  /* ---- Hero slideshow (dissolvenza) ---- */
+  var slides = $$('.hero-slide');
+  if (slides.length > 1 && !reduce) {
+    var si = 0;
+    setInterval(function () {
+      slides[si].classList.remove('is-active');
+      si = (si + 1) % slides.length;
+      slides[si].classList.add('is-active');
+    }, 5500);
+  }
+
   /* ---- Header scrolled state ---- */
   var header = $('#siteHeader');
   var onScroll = function () {
@@ -125,24 +136,42 @@
     }, { passive: true });
   }
 
-  /* ---- Gallery lightbox ---- */
+  /* ---- Gallery lightbox (navigabile: frecce, tastiera, swipe) ---- */
   var lb = $('#lightbox');
   var lbImg = $('#lightboxImg');
-  var lbClose = $('#lightboxClose');
   if (lb && lbImg && typeof lb.showModal === 'function') {
-    $$('.gal-item').forEach(function (item) {
-      on(item, 'click', function () {
-        var src = item.getAttribute('data-full');
-        var img = $('img', item);
-        lbImg.src = src;
-        lbImg.alt = img ? img.alt : '';
-        lb.showModal();
-      });
+    var items = $$('.gal-item');
+    var lbCount = $('#lightboxCount');
+    var cur = 0;
+    var show = function (i) {
+      cur = (i + items.length) % items.length;
+      var item = items[cur];
+      lbImg.src = item.getAttribute('data-full');
+      var img = $('img', item);
+      lbImg.alt = img ? img.alt : '';
+      if (lbCount) lbCount.textContent = (cur + 1) + ' / ' + items.length;
+    };
+    items.forEach(function (item, i) {
+      on(item, 'click', function () { show(i); lb.showModal(); });
     });
-    var close = function () { lb.close(); };
-    on(lbClose, 'click', close);
-    on(lb, 'click', function (e) { if (e.target === lb) close(); });
+    on($('#lightboxPrev'), 'click', function (e) { e.stopPropagation(); show(cur - 1); });
+    on($('#lightboxNext'), 'click', function (e) { e.stopPropagation(); show(cur + 1); });
+    on($('#lightboxClose'), 'click', function () { lb.close(); });
+    on(lb, 'click', function (e) { if (e.target === lb) lb.close(); });
     on(lb, 'close', function () { lbImg.src = ''; });
+    on(document, 'keydown', function (e) {
+      if (!lb.open) return;
+      if (e.key === 'ArrowLeft') show(cur - 1);
+      else if (e.key === 'ArrowRight') show(cur + 1);
+    });
+    var sx = null;
+    on(lb, 'touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
+    on(lb, 'touchend', function (e) {
+      if (sx === null) return;
+      var dx = e.changedTouches[0].clientX - sx;
+      if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1));
+      sx = null;
+    }, { passive: true });
   }
 
   /* ---- Discipline: desktop = mosaico che ruota di 1 posizione · mobile = accordion ---- */
