@@ -215,7 +215,19 @@
     var mobT = null;
     var stopMob = function () { if (mobT) { clearInterval(mobT); mobT = null; } };
     var startMob = function () { if (reduce) return; stopMob(); fillFeatured(MOB_INT); mobT = setInterval(function () { setActive(idx + 1); fillFeatured(MOB_INT); }, MOB_INT); };
-    tiles.forEach(function (t, i) { on(t, 'click', function () { if (!mq.matches) { setActive(i); startMob(); } }); });
+    // Click: su mobile apre l'accordion; su desktop porta la tessera nel riquadro grande.
+    // Il conteggio resta in pausa finche' il mouse e' sopra, poi riparte da quella scelta.
+    tiles.forEach(function (t, i) {
+      on(t, 'click', function () {
+        if (mq.matches) {
+          offset = (N - i) % N;   // cosi' (i + offset) % N === 0 -> questa tessera diventa pos0
+          layout();
+          resetBars();
+        } else {
+          setActive(i); startMob();
+        }
+      });
+    });
 
     var applyMode = function () {
       if (mq.matches) {

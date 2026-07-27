@@ -156,7 +156,8 @@ em,.accent{font-style:normal;color:var(--brand)}
 /* Desktop: mosaico (grande a sinistra) con rotazione delle posizioni */
 @media (min-width:821px){
   .accordion{display:block;position:relative;height:clamp(400px, 40vw, 540px)}
-  .tile{position:absolute;top:0;left:0;width:20%;height:50%;border:5px solid var(--night);cursor:default;transition:top .7s var(--ease),left .7s var(--ease),width .7s var(--ease),height .7s var(--ease)}
+  .tile{position:absolute;top:0;left:0;width:20%;height:50%;border:5px solid var(--night);cursor:pointer;transition:top .7s var(--ease),left .7s var(--ease),width .7s var(--ease),height .7s var(--ease)}
+  .tile:not(.pos0):hover{filter:brightness(1.12)}
   .tile.pos0{left:0;top:0;width:40%;height:100%}
   .tile.pos1{left:40%;top:0}
   .tile.pos2{left:60%;top:0}
