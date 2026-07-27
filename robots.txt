@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://scuoladiballonuovaera.it/sitemap.xml

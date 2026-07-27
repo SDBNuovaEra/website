@@ -1,0 +1,6 @@
+# === Redirect Netlify ===
+# Vecchi indirizzi del sito storico -> mandali alla home (301 permanente).
+# Cosi' i link gia' indicizzati da Google non danno mai 404 (protegge la SEO).
+/class-schedule.html     /   301
+/index-2-onepage.html    /   301
+/index_sosp.html         /   301

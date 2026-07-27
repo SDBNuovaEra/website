@@ -1,0 +1,21 @@
+# === Header Netlify ===
+# Immagini, CSS e JS: cache lunga (hanno gia' il ?v=N per forzare l'aggiornamento)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Le pagine HTML devono aggiornarsi subito
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Sito in lavorazione: NON farlo indicizzare da Google finche' e' "home.html".
+# Al lancio home.html diventa index.html -> questa regola smette da sola di applicarsi.
+/home.html
+  X-Robots-Tag: noindex

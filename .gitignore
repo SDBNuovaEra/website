@@ -1,0 +1,5 @@
+# Sorgenti pesanti e file di lavoro: non servono online
+foto/
+_test.html
+_gmaps.html
+*.zip
