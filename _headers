@@ -14,8 +14,3 @@
   Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-
-# Sito in lavorazione: NON farlo indicizzare da Google finche' e' "home.html".
-# Al lancio home.html diventa index.html -> questa regola smette da sola di applicarsi.
-/home.html
-  X-Robots-Tag: noindex
