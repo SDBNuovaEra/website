@@ -186,7 +186,8 @@ em,.accent{font-style:normal;color:var(--brand)}
 
 /* Maestri */
 .maestri{background:var(--night)}
-.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem}
+/* grid-auto-rows:1fr -> tutte le schede alla stessa altezza, anche con testi di lunghezza diversa */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem;grid-auto-rows:1fr}
 .team-card{background:var(--night-2);border:1px solid var(--line-dark);border-radius:var(--radius);padding:1.6rem;display:flex;gap:1.1rem;align-items:center;transition:transform .4s var(--ease),border-color .3s}
 .team-card:hover{transform:translateY(-5px);border-color:rgba(226,60,36,.5)}
 .team-photo{flex:0 0 auto;width:76px;height:76px;border-radius:50%;background:radial-gradient(120% 120% at 30% 20%,#2a2732,var(--night));display:grid;place-items:center;overflow:hidden;position:relative}
