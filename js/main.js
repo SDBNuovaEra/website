@@ -136,12 +136,31 @@
     }, { passive: true });
   }
 
-  /* ---- Schede maestri: su desktop gira col mouse (CSS), su touch col tocco ---- */
+  /* ---- Schede maestri: su desktop gira col mouse (CSS), su touch col tocco ----
+     Sul touch la scheda torna da sola dopo qualche secondo, e aprirne una
+     richiude quella eventualmente gia' aperta. */
   var canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
-  $$('.team-card.has-photo').forEach(function (c) {
+  var teamCards = $$('.team-card.has-photo');
+  var RITORNO = 5000;
+  var flipTimer = null;
+  var chiudiTutte = function () {
+    if (flipTimer) { clearTimeout(flipTimer); flipTimer = null; }
+    teamCards.forEach(function (x) { x.classList.remove('flipped'); });
+  };
+  teamCards.forEach(function (c) {
     on(c, 'click', function () {
-      if (!canHover.matches) c.classList.toggle('flipped');
+      if (canHover.matches) return;              // su desktop ci pensa l'hover
+      var eraAperta = c.classList.contains('flipped');
+      chiudiTutte();
+      if (!eraAperta) {
+        c.classList.add('flipped');
+        flipTimer = setTimeout(chiudiTutte, RITORNO);
+      }
     });
+  });
+  /* toccando altrove si richiude subito */
+  on(document, 'click', function (e) {
+    if (!canHover.matches && !e.target.closest('.team-card')) chiudiTutte();
   });
 
   /* ---- Gallery lightbox (navigabile: frecce, tastiera, swipe) ---- */
