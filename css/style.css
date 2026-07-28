@@ -132,7 +132,8 @@ em,.accent{font-style:normal;color:var(--brand)}
 .storia{background:var(--paper)}
 .storia-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(2rem, 1rem + 4vw, 5rem);align-items:center}
 .storia-photo{position:relative}
-.storia-photo img{width:100%;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);aspect-ratio:4 / 3.6;object-fit:cover}
+/* niente formato fisso: la foto si vede intera, non ritagliata */
+.storia-photo img{width:100%;height:auto;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg)}
 .storia-since{position:absolute;left:-12px;bottom:-18px;background:var(--night);color:#fff;font-family:var(--font-script);font-size:1.6rem;padding:.5rem 1.4rem;border-radius:100px;box-shadow:var(--shadow)}
 .storia-since b{color:var(--lime);font-family:var(--font-display);font-weight:800;letter-spacing:-.02em}
 .storia-title{font-size:clamp(2.2rem, 1.5rem + 3vw, 3.8rem);font-weight:800;letter-spacing:-.03em;margin-bottom:1.2rem}
@@ -168,16 +169,17 @@ em,.accent{font-style:normal;color:var(--brand)}
   .accordion{display:block;position:relative;height:clamp(400px, 40vw, 540px)}
   .tile{position:absolute;top:0;left:0;width:20%;height:50%;border:5px solid var(--night);cursor:pointer;transition:top .7s var(--ease),left .7s var(--ease),width .7s var(--ease),height .7s var(--ease)}
   .tile:not(.pos0):hover{filter:brightness(1.12)}
-  /* Mosaico per 8 discipline: 1 grande a sinistra + 7 piccole
-     (4 in alto, 3 in basso). L'ordine gira in senso orario. */
-  .tile.pos0{left:0;top:0;width:38%;height:100%}
-  .tile.pos1{left:38%;top:0;width:15.5%}
-  .tile.pos2{left:53.5%;top:0;width:15.5%}
-  .tile.pos3{left:69%;top:0;width:15.5%}
-  .tile.pos4{left:84.5%;top:0;width:15.5%}
-  .tile.pos5{left:79.334%;top:50%;width:20.666%}
-  .tile.pos6{left:58.667%;top:50%;width:20.666%}
-  .tile.pos7{left:38%;top:50%;width:20.666%}
+  /* Mosaico per 9 discipline: 1 grande a sinistra + 8 piccole (4 + 4).
+     L'ordine gira in senso orario. */
+  .tile.pos0{left:0;top:0;width:36%;height:100%}
+  .tile.pos1{left:36%;top:0;width:16%}
+  .tile.pos2{left:52%;top:0;width:16%}
+  .tile.pos3{left:68%;top:0;width:16%}
+  .tile.pos4{left:84%;top:0;width:16%}
+  .tile.pos5{left:84%;top:50%;width:16%}
+  .tile.pos6{left:68%;top:50%;width:16%}
+  .tile.pos7{left:52%;top:50%;width:16%}
+  .tile.pos8{left:36%;top:50%;width:16%}
   .tile-content{padding:1rem}
   .tile.pos0 .tile-content{padding:1.6rem}
   .tile-title{font-size:1.05rem}
