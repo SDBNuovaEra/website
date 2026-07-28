@@ -201,7 +201,9 @@ em,.accent{font-style:normal;color:var(--brand)}
 .team-card{display:grid;perspective:1100px;border-radius:var(--radius)}
 .team-card:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
 .team-inner{position:relative;display:grid;transform-style:preserve-3d;transition:transform .75s var(--ease)}
-.team-card:hover .team-inner,.team-card:focus-visible .team-inner,.team-card.flipped .team-inner{transform:rotateY(180deg)}
+/* girano solo le schede che hanno davvero una foto sul retro */
+.team-card.has-photo:hover .team-inner,.team-card.has-photo:focus-visible .team-inner,.team-card.has-photo.flipped .team-inner{transform:rotateY(180deg)}
+.team-card:not(.has-photo){cursor:default}
 .team-face{backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--night-2);border:1px solid var(--line-dark);border-radius:var(--radius);transition:border-color .3s}
 .team-card:hover .team-face,.team-card.flipped .team-face{border-color:rgba(226,60,36,.5)}
 .team-front{padding:1.6rem;display:flex;gap:1.1rem;align-items:center}

@@ -138,7 +138,7 @@
 
   /* ---- Schede maestri: su desktop gira col mouse (CSS), su touch col tocco ---- */
   var canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
-  $$('.team-card').forEach(function (c) {
+  $$('.team-card.has-photo').forEach(function (c) {
     on(c, 'click', function () {
       if (!canHover.matches) c.classList.toggle('flipped');
     });
