@@ -136,6 +136,14 @@
     }, { passive: true });
   }
 
+  /* ---- Schede maestri: su desktop gira col mouse (CSS), su touch col tocco ---- */
+  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+  $$('.team-card').forEach(function (c) {
+    on(c, 'click', function () {
+      if (!canHover.matches) c.classList.toggle('flipped');
+    });
+  });
+
   /* ---- Gallery lightbox (navigabile: frecce, tastiera, swipe) ---- */
   var lb = $('#lightbox');
   var lbImg = $('#lightboxImg');
