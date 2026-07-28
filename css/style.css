@@ -7,7 +7,7 @@
 :root{
   --brand:#E23C24; --brand-2:#B92C15; --lime:#C6D62E; --lime-2:#AFC017;
   --ink:#17161B; --ink-soft:#55535E; --paper:#FFFFFF; --mist:#F5F3F1;
-  --night:#131117; --night-2:#1C1A23; --night-3:#0E0D11; --night-4:#0D0C11;
+  --night:#131117; --night-2:#1C1A23; --night-3:#0E0D11; --night-4:#18161D;
   --on-dark:#ECEAF0; --on-dark-soft:#A9A5B4;
   --line-light:rgba(23,22,27,.12); --line-dark:rgba(255,255,255,.13);
   --wa:#25D366;
@@ -56,7 +56,10 @@ em,.accent{font-style:normal;color:var(--brand)}
    Per toglierlo basta rimettere  .dark{background:var(--night)}  ed eliminare .dark::before. */
 .dark{background:var(--night-4);color:var(--on-dark);position:relative;isolation:isolate}
 .dark::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1;pointer-events:none;
-  background:url("../assets/img/damask.svg") repeat 0 0;background-size:130px 130px}
+  background:url("../assets/img/damask.webp") repeat 0 0;background-size:260px 364px}
+/* luce radente, come sul velluto */
+.dark::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(130% 70% at 50% 0%, rgba(255,255,255,.035), transparent 72%)}
 .dark .section-sub{color:var(--on-dark-soft)}
 .dark h1,.dark h2,.dark h3,.dark h4{color:var(--on-dark)}
 
