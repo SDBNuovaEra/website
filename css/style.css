@@ -52,11 +52,11 @@ em,.accent{font-style:normal;color:var(--brand)}
 .section{padding-top:var(--section-y);padding-bottom:var(--section-y);position:relative}
 .section-head{max-width:44rem;margin-bottom:clamp(2.2rem, 1.5rem + 2vw, 3.5rem)}
 .section-sub{margin-top:.9rem;color:var(--ink-soft);font-size:1.05rem;max-width:60ch}
-/* Sezioni scure: nero profondo con motivo musicale minimale, tono su tono.
+/* Sezioni scure: nero profondo con marchio dei ballerini, tono su tono.
    Per toglierlo basta rimettere  .dark{background:var(--night)}  ed eliminare .dark::before. */
 .dark{background:var(--night-4);color:var(--on-dark);position:relative;isolation:isolate}
 .dark::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1;pointer-events:none;
-  background:url("../assets/img/pattern.webp") repeat 0 0;background-size:200px 200px}
+  background:url("../assets/img/pattern.webp") repeat 0 0;background-size:220px 220px}
 /* luce radente, come sul velluto */
 .dark::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1;pointer-events:none;
   background:radial-gradient(130% 70% at 50% 0%, rgba(255,255,255,.035), transparent 72%)}
