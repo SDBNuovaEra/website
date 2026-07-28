@@ -210,10 +210,21 @@ em,.accent{font-style:normal;color:var(--brand)}
 .team-card:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
 .team-inner{position:relative;display:grid;transform-style:preserve-3d;transition:transform .75s var(--ease)}
 /* girano solo le schede che hanno davvero una foto sul retro */
-.team-card.has-photo:hover .team-inner,.team-card.has-photo:focus-visible .team-inner,.team-card.has-photo.flipped .team-inner{transform:rotateY(180deg)}
+/* Il giro comandato dal JS (classe .flipped) vale ovunque. */
+.team-card.has-photo.flipped .team-inner{transform:rotateY(180deg)}
+/* Il giro al passaggio del mouse SOLO dove il mouse esiste davvero:
+   sul touch il :hover resta "incollato" dopo il tocco e terrebbe la scheda
+   girata anche dopo che il JS l'ha richiusa. */
+@media (hover: hover) and (pointer: fine){
+  .team-card.has-photo:hover .team-inner,
+  .team-card.has-photo:focus-visible .team-inner{transform:rotateY(180deg)}
+}
 .team-card:not(.has-photo){cursor:default}
 .team-face{backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--night-2);border:1px solid var(--line-dark);border-radius:var(--radius);transition:border-color .3s}
-.team-card:hover .team-face,.team-card.flipped .team-face{border-color:rgba(226,60,36,.5)}
+.team-card.flipped .team-face{border-color:rgba(226,60,36,.5)}
+@media (hover: hover) and (pointer: fine){
+  .team-card:hover .team-face{border-color:rgba(226,60,36,.5)}
+}
 .team-front{padding:1.6rem;display:flex;gap:1.1rem;align-items:center}
 .team-back{position:absolute;top:0;left:0;right:0;bottom:0;transform:rotateY(180deg);overflow:hidden;display:flex;align-items:flex-end}
 /* object-position alto: su mobile la scheda e' bassa e larga, con il centro

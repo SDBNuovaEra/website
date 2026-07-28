@@ -141,7 +141,7 @@
      richiude quella eventualmente gia' aperta. */
   var canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
   var teamCards = $$('.team-card.has-photo');
-  var RITORNO = 5000;
+  var RITORNO = 3000;
   var flipTimer = null;
   var chiudiTutte = function () {
     if (flipTimer) { clearTimeout(flipTimer); flipTimer = null; }
