@@ -213,14 +213,26 @@
   }
 
   /* Corpo e braccia separati: le braccia di chi sorregge vanno disegnate
-     sopra a tutto, altrimenti spariscono dietro al corpo sollevato. */
+     sopra a tutto, altrimenti spariscono dietro al corpo sollevato.
+     Il verso (p.verso: 1 = guarda a destra, -1 = a sinistra) si legge da tre
+     indizi: naso di profilo, piedi orientati e, per lei, la coda di capelli. */
   function corpoDi(p, col) {
     var s = scheletro(p), o = [];
+    var v = p.verso || 1;
+    var A = p.busto + (p.testa || 0);
     o.push(seg(s.hip, s.gin.sx, 8.2, col), seg(s.gin.sx, s.pie.sx, 6.8, col));
+    o.push(seg(s.pie.sx, pt(s.pie.sx[0], s.pie.sx[1], p.gambasx[0] + p.gambasx[1] - 78 * v, 4.8), 4.2, col));
     o.push(seg(s.hip, s.gin.dx, 8.2, col), seg(s.gin.dx, s.pie.dx, 6.8, col));
+    o.push(seg(s.pie.dx, pt(s.pie.dx[0], s.pie.dx[1], p.gambadx[0] + p.gambadx[1] - 78 * v, 4.8), 4.2, col));
     o.push(seg(s.hip, s.sh, 11.5, col));
+    if (p.coda) {                      /* coda di capelli: dietro la testa, opposta al naso */
+      var cr = pt(s.cap[0], s.cap[1], A - 132 * v, B.testa * 0.45);
+      o.push(seg(cr, pt(s.cap[0], s.cap[1], A - 132 * v, B.testa + 6.5), 3.6, col));
+    }
     o.push('<circle cx="' + s.cap[0].toFixed(1) + '" cy="' + s.cap[1].toFixed(1) +
            '" r="' + B.testa + '" fill="' + col + '"/>');
+    var na = pt(s.cap[0], s.cap[1], A + 90 * v, B.testa * 0.82);
+    o.push('<circle cx="' + na[0].toFixed(1) + '" cy="' + na[1].toFixed(1) + '" r="2.5" fill="' + col + '"/>');
     return o.join('');
   }
 
@@ -292,6 +304,7 @@
       if (Math.abs(t - ultimo) < 0.004) return;
       ultimo = t;
       var p = posaA(t);
+      p.lui.verso = 1; p.lei.verso = -1; p.lei.coda = 1;   /* si guardano */
       tela.innerHTML = corpoDi(p.lui, VERM) + corpoDi(p.lei, LIME) +
                        bracciaDi(p.lei, LIME) + bracciaDi(p.lui, VERM);
     };
