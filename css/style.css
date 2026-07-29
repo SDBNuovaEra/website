@@ -344,12 +344,18 @@ em,.accent{font-style:normal;color:var(--brand)}
   /* Il backdrop-filter sull'intestazione la rende il riferimento per i figli
      in posizione fissa: senza toglierlo il menu resta alto quanto la barra.
      A menu aperto non serve, perche' il pannello copre tutto lo schermo. */
-  body.menu-open .site-header{backdrop-filter:none;background:transparent;box-shadow:none}
+  /* Il menu sta dentro l'intestazione, che ha priorita' 100: il velo (299)
+     le finiva sopra e anneriva anche il pannello. A menu aperto l'intestazione
+     sale sopra al velo, cosi' il velo scurisce solo il sito dietro. */
+  body.menu-open .site-header{backdrop-filter:none;background:transparent;box-shadow:none;z-index:var(--z-menu)}
 
   /* striscia di sito lasciata scoperta: toccarla o trascinare chiude il menu */
+  /* Niente transizione su visibility: resta incollata al valore iniziale e il
+     velo non compare mai. Si anima la sola opacita' e si usa pointer-events
+     per renderlo cliccabile solo a menu aperto. */
   .nav-velo{position:fixed;top:0;left:0;right:0;bottom:0;z-index:calc(var(--z-menu) - 1);
-    background:rgba(8,6,10,.55);opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility .35s}
-  body.menu-open .nav-velo{opacity:1;visibility:visible}
+    background:rgba(8,6,10,.55);opacity:0;pointer-events:none;transition:opacity .35s var(--ease)}
+  body.menu-open .nav-velo{opacity:1;pointer-events:auto}
   body.menu-open .nav{transform:none}
   body.menu-open{overflow:hidden}
   /* il tondo WhatsApp galleggia sopra al menu e copre l'ultima voce */
