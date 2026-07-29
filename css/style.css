@@ -340,7 +340,10 @@ em,.accent{font-style:normal;color:var(--brand)}
     gap:.35rem;background:rgba(15,13,18,.97);backdrop-filter:blur(10px);transform:translateX(100%);
     transition:transform .4s var(--ease);display:flex;
     /* in basso lo spazio dei due pulsanti, in alto quello della barra */
-    padding:5.5rem 1.2rem 11rem;overflow-y:auto;overscroll-behavior:contain;box-shadow:-24px 0 60px -20px rgba(0,0,0,.75)}
+    /* voci piu' in alto e meno spazio riservato in basso: cosi' ci sta tutto
+       anche quando la barra del browser riduce l'altezza utile */
+    padding:4rem 1.2rem 9.5rem;overflow-y:auto;overscroll-behavior:contain;
+    box-shadow:-24px 0 60px -20px rgba(0,0,0,.75)}
   /* Il backdrop-filter sull'intestazione la rende il riferimento per i figli
      in posizione fissa: senza toglierlo il menu resta alto quanto la barra.
      A menu aperto non serve, perche' il pannello copre tutto lo schermo. */
@@ -360,7 +363,7 @@ em,.accent{font-style:normal;color:var(--brand)}
   body.menu-open{overflow:hidden}
   /* il tondo WhatsApp galleggia sopra al menu e copre l'ultima voce */
   body.menu-open .wa-float{display:none}
-  .nav a{font-family:var(--font-display);font-size:1.6rem;font-weight:600;padding:.5rem 1rem}
+  .nav a{font-family:var(--font-display);font-size:1.5rem;font-weight:600;padding:.42rem 1rem}
   .nav a.active::after{display:none}
   /* stessa larghezza dell'area interna del pannello, cosi' i pulsanti non sporgono */
   body.menu-open .header-cta{display:flex;position:fixed;bottom:2.5rem;right:1.2rem;z-index:var(--z-menu);
