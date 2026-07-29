@@ -103,9 +103,7 @@ em,.accent{font-style:normal;color:var(--brand)}
 /* Hero (invariato) */
 .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;color:#fff;overflow:hidden;isolation:isolate}
 .hero-media{position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1}
-/* .hero-slide ora e' un <picture>: il ritaglio va sull'immagine che contiene */
-.hero-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity 1.4s var(--ease)}
-.hero-slide img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.hero-slide{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;opacity:0;transition:opacity 1.4s var(--ease)}
 .hero-slide.is-active{opacity:1}
 .hero-scrim{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(10,8,12,.55) 0%,rgba(10,8,12,.15) 30%,rgba(12,9,14,.55) 68%,rgba(10,8,12,.94) 100%),radial-gradient(120% 80% at 15% 100%,rgba(226,60,36,.28),transparent 60%)}
 .hero-content{padding-bottom:clamp(3.5rem, 2rem + 8vh, 7rem);padding-top:8rem;max-width:64rem}
@@ -115,9 +113,6 @@ em,.accent{font-style:normal;color:var(--brand)}
 .hero-title em{color:var(--brand)}
 .hero-lead{font-size:clamp(1.05rem, .98rem + .5vw, 1.3rem);max-width:44ch;color:rgba(255,255,255,.92);margin-bottom:2rem}
 .hero-actions{display:flex;flex-wrap:wrap;gap:.9rem;margin-bottom:1.6rem}
-.hero-bonus{display:inline-flex;align-items:center;gap:.6rem;font-size:.95rem;color:rgba(255,255,255,.9);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);padding:.55rem 1.1rem;border-radius:100px;backdrop-filter:blur(6px)}
-.hero-bonus strong{color:var(--lime)}
-.bonus-dot{width:9px;height:9px;border-radius:50%;background:var(--lime);animation:pulse 2.4s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(198,214,46,.6)}70%{box-shadow:0 0 0 12px rgba(198,214,46,0)}100%{box-shadow:0 0 0 0 rgba(198,214,46,0)}}
 .hero-scroll{position:absolute;left:50%;bottom:1.6rem;transform:translateX(-50%);width:26px;height:42px;border:2px solid rgba(255,255,255,.5);border-radius:100px;z-index:2}
 .hero-scroll span{position:absolute;left:50%;top:8px;width:4px;height:8px;background:#fff;border-radius:2px;transform:translateX(-50%);animation:scroll 1.8s var(--ease) infinite}
@@ -323,7 +318,7 @@ em,.accent{font-style:normal;color:var(--brand)}
 .js .reveal.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
   .js .reveal{opacity:1!important;transform:none!important;transition:none!important}
-  .bonus-dot,.hero-scroll span,.wa-float::before,.marquee-track{animation:none}
+  .hero-scroll span,.wa-float::before,.marquee-track{animation:none}
   .tile,.tile-desc{transition:none!important}
   .tile.active img,.gal-item:hover img{transform:none}
   .tile-bar{display:none!important}
@@ -365,11 +360,8 @@ em,.accent{font-style:normal;color:var(--brand)}
   .cta-actions .btn{width:100%}
 }
 
-/* --- Hero su schermi stretti ---------------------------------------------
-   L'immagine verticale tiene i ballerini in basso e la siepe in alto: il testo
-   va ancorato IN ALTO, sul verde, invece che sopra ai volti. */
+/* Su schermi stretti l'icona di scorrimento finisce addosso ai pulsanti,
+   e su mobile si scorre comunque per istinto: la nascondo. */
 @media (max-width:800px){
-  .hero{align-items:flex-start}
-  .hero-content{padding-top:6rem;padding-bottom:2rem}
-  .hero-slide img{object-position:center top}
+  .hero-scroll{display:none}
 }
