@@ -228,26 +228,25 @@
     o.push(seg(s.pie.dx, pt(s.pie.dx[0], s.pie.dx[1], p.gambadx[0] + p.gambadx[1] + pOff, 4.8), 4.2, col));
     o.push(seg(s.hip, s.sh, 11.5, col));
     if (p.coda) {
-      /* Coda a S: due quadratiche fanno l'onda, poi si costruisce un poligono
-         affusolato attorno alla linea (spesso alla nuca, a punta in fondo). */
+      /* Coda alta: attaccata alla sommita' della testa, un'unica curva morbida
+         che ricade verso il basso, spessa alla base e affusolata in punta. */
       var D = (p.codaAng != null ? p.codaAng : 200) * Math.PI / 180;
+      var A2 = (p.busto + (p.testa || 0)) * Math.PI / 180;
       var ux = Math.sin(D), uy = -Math.cos(D), px = Math.cos(D), py = Math.sin(D);
-      var cx = s.cap[0], cy = s.cap[1], r0 = B.testa;
+      var r0 = B.testa;
+      var rx = s.cap[0] + Math.sin(A2) * r0 * 0.72, ry = s.cap[1] - Math.cos(A2) * r0 * 0.72;
+      var L = 20;
       var q = function (t, a, b, c) { var m = 1 - t; return m * m * a + 2 * m * t * b + t * t * c; };
-      var A0 = [cx + ux * r0 * 0.35, cy + uy * r0 * 0.35];
-      var C1 = [cx + ux * (r0 + 4.5) + px * 5.2, cy + uy * (r0 + 4.5) + py * 5.2];
-      var M1 = [cx + ux * (r0 + 9), cy + uy * (r0 + 9)];
-      var C2 = [cx + ux * (r0 + 13) - px * 5.0, cy + uy * (r0 + 13) - py * 5.0];
-      var E1 = [cx + ux * (r0 + 17) + px * 1.6, cy + uy * (r0 + 17) + py * 1.6];
-      var pts = [], i, t;
-      for (i = 0; i <= 6; i++) { t = i / 6; pts.push([q(t, A0[0], C1[0], M1[0]), q(t, A0[1], C1[1], M1[1])]); }
-      for (i = 1; i <= 6; i++) { t = i / 6; pts.push([q(t, M1[0], C2[0], E1[0]), q(t, M1[1], C2[1], E1[1])]); }
+      var Cx = rx + ux * L * 0.35 + px * 6.2, Cy = ry + uy * L * 0.35 + py * 6.2;
+      var Ex = rx + ux * L, Ey = ry + uy * L;
+      var pts = [], i;
+      for (i = 0; i <= 10; i++) pts.push([q(i / 10, rx, Cx, Ex), q(i / 10, ry, Cy, Ey)]);
       var su = [], giu = [];
       for (i = 0; i < pts.length; i++) {
-        var w = 4.6 * (1 - i / (pts.length - 1)) + 0.3;
-        var a2 = pts[Math.max(i - 1, 0)], b2 = pts[Math.min(i + 1, pts.length - 1)];
-        var dx2 = b2[0] - a2[0], dy2 = b2[1] - a2[1], L2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) || 1;
-        var nx = -dy2 / L2, ny = dx2 / L2;
+        var w = 6.6 * (1 - i / (pts.length - 1)) + 0.5;
+        var a3 = pts[Math.max(i - 1, 0)], b3 = pts[Math.min(i + 1, pts.length - 1)];
+        var dx3 = b3[0] - a3[0], dy3 = b3[1] - a3[1], L3 = Math.sqrt(dx3 * dx3 + dy3 * dy3) || 1;
+        var nx = -dy3 / L3, ny = dx3 / L3;
         su.push((pts[i][0] + nx * w / 2).toFixed(1) + ' ' + (pts[i][1] + ny * w / 2).toFixed(1));
         giu.push((pts[i][0] - nx * w / 2).toFixed(1) + ' ' + (pts[i][1] - ny * w / 2).toFixed(1));
       }
