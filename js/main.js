@@ -45,6 +45,16 @@
   });
   $$('#primaryNav a').forEach(function (a) { on(a, 'click', closeMenu); });
   on(document, 'keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
+  /* la striscia di sito lasciata scoperta chiude il menu se toccata */
+  on($('#navVelo'), 'click', closeMenu);
+  /* ...oppure trascinando il pannello verso destra */
+  var nav = $('#primaryNav'), tocco = null;
+  on(nav, 'touchstart', function (e) { tocco = e.touches[0].clientX; }, { passive: true });
+  on(nav, 'touchend', function (e) {
+    if (tocco === null) return;
+    if (e.changedTouches[0].clientX - tocco > 60) closeMenu();
+    tocco = null;
+  }, { passive: true });
 
   /* ---- Reveal on scroll ---- */
   var reveals = $$('.reveal');

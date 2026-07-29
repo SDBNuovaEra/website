@@ -336,22 +336,29 @@ em,.accent{font-style:normal;color:var(--brand)}
   .nav-toggle{display:flex}
   .site-header{background:rgba(17,15,22,.9);backdrop-filter:blur(12px);padding-top:.75rem;padding-bottom:.75rem}
   .site-header .brand-logo{height:50px}
-  .nav{position:fixed;top:0;left:0;right:0;bottom:0;z-index:var(--z-menu);flex-direction:column;justify-content:flex-start;
+  .nav{position:fixed;top:0;left:auto;right:0;bottom:0;width:min(82%, 380px);z-index:var(--z-menu);flex-direction:column;justify-content:flex-start;
     gap:.35rem;background:rgba(15,13,18,.97);backdrop-filter:blur(10px);transform:translateX(100%);
     transition:transform .4s var(--ease);display:flex;
     /* in basso lo spazio dei due pulsanti, in alto quello della barra */
-    padding:5.5rem 1rem 11rem;overflow-y:auto;overscroll-behavior:contain}
+    padding:5.5rem 1.2rem 11rem;overflow-y:auto;overscroll-behavior:contain;box-shadow:-24px 0 60px -20px rgba(0,0,0,.75)}
   /* Il backdrop-filter sull'intestazione la rende il riferimento per i figli
      in posizione fissa: senza toglierlo il menu resta alto quanto la barra.
      A menu aperto non serve, perche' il pannello copre tutto lo schermo. */
   body.menu-open .site-header{backdrop-filter:none;background:transparent;box-shadow:none}
+
+  /* striscia di sito lasciata scoperta: toccarla o trascinare chiude il menu */
+  .nav-velo{position:fixed;top:0;left:0;right:0;bottom:0;z-index:calc(var(--z-menu) - 1);
+    background:rgba(8,6,10,.55);opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility .35s}
+  body.menu-open .nav-velo{opacity:1;visibility:visible}
   body.menu-open .nav{transform:none}
   body.menu-open{overflow:hidden}
   /* il tondo WhatsApp galleggia sopra al menu e copre l'ultima voce */
   body.menu-open .wa-float{display:none}
   .nav a{font-family:var(--font-display);font-size:1.6rem;font-weight:600;padding:.5rem 1rem}
   .nav a.active::after{display:none}
-  body.menu-open .header-cta{display:flex;position:fixed;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:var(--z-menu);flex-direction:column;width:min(80%,320px)}
+  /* stessa larghezza dell'area interna del pannello, cosi' i pulsanti non sporgono */
+  body.menu-open .header-cta{display:flex;position:fixed;bottom:2.5rem;right:1.2rem;z-index:var(--z-menu);
+    flex-direction:column;width:calc(min(82%, 380px) - 2.4rem)}
   body.menu-open .header-cta .btn{width:100%}
   body.menu-open .nav-toggle span:nth-child(1){transform:translateY(7px) rotate(45deg)}
   body.menu-open .nav-toggle span:nth-child(2){opacity:0}
@@ -390,19 +397,29 @@ em,.accent{font-style:normal;color:var(--brand)}
 .ora i{font-style:normal;color:var(--on-dark-soft);font-size:.8rem;font-variant-numeric:tabular-nums}
 .disc{color:var(--on-dark);font-weight:500}
 
-.openday{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
-  background:linear-gradient(120deg,rgba(226,60,36,.22),rgba(198,214,46,.12));
-  border:1px solid rgba(226,60,36,.45);border-radius:var(--radius);padding:1.1rem 1.3rem;margin-top:.5rem}
-.openday-tag{font-family:var(--font-display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;
-  font-size:.78rem;color:#fff;background:var(--brand);padding:.35rem .7rem;border-radius:100px;white-space:nowrap}
-.openday p{color:var(--on-dark);margin-right:auto;font-size:.98rem}
-.openday strong{color:#fff}
+/* Open Day: giornata a se', con orari propri concentrati */
+.openday{display:grid;grid-template-columns:1.05fr 1fr;gap:1.6rem;align-items:center;
+  background:linear-gradient(120deg,rgba(226,60,36,.20),rgba(198,214,46,.10));
+  border:1px solid rgba(226,60,36,.42);border-radius:var(--radius-lg);padding:1.5rem;margin-top:.5rem}
+.openday-tag{display:inline-block;font-family:var(--font-display);font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;font-size:.76rem;color:#fff;background:var(--brand);
+  padding:.35rem .75rem;border-radius:100px}
+.openday-testo h3{color:#fff;margin:.7rem 0 .5rem;font-size:clamp(1.3rem, 1.1rem + .8vw, 1.7rem)}
+.openday-testo p{color:var(--on-dark);font-size:.96rem;margin-bottom:1rem}
+.openday-nota{color:var(--on-dark-soft);font-size:.82rem;margin-top:.8rem;margin-bottom:0}
+.openday-slot{display:grid;grid-template-columns:1fr 1fr;gap:.5rem .9rem;
+  background:rgba(10,8,12,.42);border-radius:var(--radius);padding:1.1rem}
+.openday-slot li{display:flex;align-items:baseline;gap:.6rem;font-size:.9rem}
+
+.orari-sub{color:#fff;margin-top:2.4rem;margin-bottom:.2rem;font-size:1.15rem}
 
 .orari-nota{margin-top:1.4rem;color:var(--on-dark-soft);font-size:.88rem}
 .orari-nota a{color:var(--lime);border-bottom:1px solid rgba(198,214,46,.4)}
 
+@media (max-width:820px){
+  .openday{grid-template-columns:1fr;gap:1.2rem}
+}
 @media (max-width:520px){
   .orari-grid{grid-template-columns:1fr}
-  .openday{flex-direction:column;align-items:flex-start}
-  .openday p{margin-right:0}
+  .openday-slot{grid-template-columns:1fr}
 }
