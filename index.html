@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Poppins:wght@400;500;600&family=Kaushan+Script&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/style.css?v=41">
+<link rel="stylesheet" href="css/style.css?v=42">
 
 <!-- Dati struttrati: aiutano Google a mostrare indirizzo, telefono e mappa nelle ricerche locali -->
 <script type="application/ld+json">
@@ -98,11 +98,16 @@
 <section class="hero" id="home">
   <div class="hero-media">
     <!-- Hero: una sola foto per ora. Aggiungere altre <img class="hero-slide"> qui per riattivare lo scorrimento. -->
-    <img class="hero-slide is-active" src="assets/img/hero.webp"
-         srcset="assets/img/hero-1400.webp 1400w, assets/img/hero.webp 2542w, assets/img/hero-3200.webp 3177w"
-         sizes="(max-width: 800px) 100vw, (max-aspect-ratio: 2542/1416) 180vh, 100vw"
-         alt="Coppie di tango argentino in posa durante uno spettacolo all'aperto"
-         fetchpriority="high" width="2542" height="1416">
+    <picture class="hero-slide is-active">
+      <!-- Su schermi stretti una versione verticale: il gruppo resta in basso e
+           sopra c'e' la siepe, cosi' il testo non finisce sui volti. -->
+      <source media="(max-width: 800px)" srcset="assets/img/hero-mobile.webp" width="900" height="1638">
+      <source srcset="assets/img/hero-1400.webp 1400w, assets/img/hero.webp 2542w, assets/img/hero-3200.webp 3177w"
+              sizes="(max-aspect-ratio: 2542/1416) 180vh, 100vw">
+      <img src="assets/img/hero.webp"
+           alt="Coppie di tango argentino in posa durante uno spettacolo all'aperto"
+           fetchpriority="high" width="2542" height="1416">
+    </picture>
     <div class="hero-scrim"></div>
   </div>
 
@@ -495,6 +500,6 @@
   <span class="lb-count" id="lightboxCount"></span>
 </dialog>
 
-<script src="js/main.js?v=41"></script>
+<script src="js/main.js?v=42"></script>
 </body>
 </html>

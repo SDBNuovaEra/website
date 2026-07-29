@@ -103,7 +103,9 @@ em,.accent{font-style:normal;color:var(--brand)}
 /* Hero (invariato) */
 .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;color:#fff;overflow:hidden;isolation:isolate}
 .hero-media{position:absolute;top:0;left:0;right:0;bottom:0;z-index:-1}
-.hero-slide{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;opacity:0;transition:opacity 1.4s var(--ease)}
+/* .hero-slide ora e' un <picture>: il ritaglio va sull'immagine che contiene */
+.hero-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity 1.4s var(--ease)}
+.hero-slide img{width:100%;height:100%;object-fit:cover;object-position:center 30%}
 .hero-slide.is-active{opacity:1}
 .hero-scrim{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(10,8,12,.55) 0%,rgba(10,8,12,.15) 30%,rgba(12,9,14,.55) 68%,rgba(10,8,12,.94) 100%),radial-gradient(120% 80% at 15% 100%,rgba(226,60,36,.28),transparent 60%)}
 .hero-content{padding-bottom:clamp(3.5rem, 2rem + 8vh, 7rem);padding-top:8rem;max-width:64rem}
@@ -361,4 +363,13 @@ em,.accent{font-style:normal;color:var(--brand)}
   .stats-band{grid-template-columns:1fr 1fr}
   .gallery{columns:2}
   .cta-actions .btn{width:100%}
+}
+
+/* --- Hero su schermi stretti ---------------------------------------------
+   L'immagine verticale tiene i ballerini in basso e la siepe in alto: il testo
+   va ancorato IN ALTO, sul verde, invece che sopra ai volti. */
+@media (max-width:800px){
+  .hero{align-items:flex-start}
+  .hero-content{padding-top:6rem;padding-bottom:2rem}
+  .hero-slide img{object-position:center top}
 }
