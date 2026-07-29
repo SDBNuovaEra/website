@@ -214,25 +214,31 @@
 
   /* Corpo e braccia separati: le braccia di chi sorregge vanno disegnate
      sopra a tutto, altrimenti spariscono dietro al corpo sollevato.
-     Il verso (p.verso: 1 = guarda a destra, -1 = a sinistra) si legge da tre
-     indizi: naso di profilo, piedi orientati e, per lei, la coda di capelli. */
+     Il verso si legge dai piedi e, per lei, dalla coda di capelli a onda.
+     p.piede: rotazione del piede rispetto alla gamba (se assente: -78*verso,
+     cioe' appoggiato a terra nel verso dello sguardo). p.codaAng: direzione
+     assoluta della coda, interpolata fra le pose. */
   function corpoDi(p, col) {
     var s = scheletro(p), o = [];
     var v = p.verso || 1;
-    var A = p.busto + (p.testa || 0);
+    var pOff = (p.piede != null ? p.piede : -78 * v);
     o.push(seg(s.hip, s.gin.sx, 8.2, col), seg(s.gin.sx, s.pie.sx, 6.8, col));
-    o.push(seg(s.pie.sx, pt(s.pie.sx[0], s.pie.sx[1], p.gambasx[0] + p.gambasx[1] - 78 * v, 4.8), 4.2, col));
+    o.push(seg(s.pie.sx, pt(s.pie.sx[0], s.pie.sx[1], p.gambasx[0] + p.gambasx[1] + pOff, 4.8), 4.2, col));
     o.push(seg(s.hip, s.gin.dx, 8.2, col), seg(s.gin.dx, s.pie.dx, 6.8, col));
-    o.push(seg(s.pie.dx, pt(s.pie.dx[0], s.pie.dx[1], p.gambadx[0] + p.gambadx[1] - 78 * v, 4.8), 4.2, col));
+    o.push(seg(s.pie.dx, pt(s.pie.dx[0], s.pie.dx[1], p.gambadx[0] + p.gambadx[1] + pOff, 4.8), 4.2, col));
     o.push(seg(s.hip, s.sh, 11.5, col));
-    if (p.coda) {                      /* coda di capelli: dietro la testa, opposta al naso */
-      var cr = pt(s.cap[0], s.cap[1], A - 132 * v, B.testa * 0.45);
-      o.push(seg(cr, pt(s.cap[0], s.cap[1], A - 132 * v, B.testa + 6.5), 3.6, col));
+    if (p.coda) {
+      var D = (p.codaAng != null ? p.codaAng : 200) * Math.PI / 180;
+      var ux = Math.sin(D), uy = -Math.cos(D), px = Math.cos(D), py = Math.sin(D);
+      var r0 = B.testa, cx = s.cap[0], cy = s.cap[1];
+      o.push('<path d="M' + (cx + ux * r0 * .45).toFixed(1) + ' ' + (cy + uy * r0 * .45).toFixed(1) +
+             ' C' + (cx + ux * (r0 + 3.5) + px * 2.6).toFixed(1) + ' ' + (cy + uy * (r0 + 3.5) + py * 2.6).toFixed(1) +
+             ' '  + (cx + ux * (r0 + 8) - px * 2.6).toFixed(1)  + ' ' + (cy + uy * (r0 + 8) - py * 2.6).toFixed(1) +
+             ' '  + (cx + ux * (r0 + 12)).toFixed(1) + ' ' + (cy + uy * (r0 + 12)).toFixed(1) +
+             '" stroke="' + col + '" stroke-width="3.2" stroke-linecap="round" fill="none"/>');
     }
     o.push('<circle cx="' + s.cap[0].toFixed(1) + '" cy="' + s.cap[1].toFixed(1) +
            '" r="' + B.testa + '" fill="' + col + '"/>');
-    var na = pt(s.cap[0], s.cap[1], A + 90 * v, B.testa * 0.82);
-    o.push('<circle cx="' + na[0].toFixed(1) + '" cy="' + na[1].toFixed(1) + '" r="2.5" fill="' + col + '"/>');
     return o.join('');
   }
 
@@ -246,23 +252,23 @@
   var POSE = [
     { t: 0.00,
       lui: { hip: [34, 96], busto: 2,  testa: 4,  bracciosx: [196, 14], bracciodx: [166, -16], gambasx: [188, 6], gambadx: [172, -6] },
-      lei: { hip: [86, 96], busto: -2, testa: -4, bracciosx: [194, 16], bracciodx: [164, -14], gambasx: [188, 6], gambadx: [172, -6] } },
+      lei: { hip: [86, 96], codaAng: -150, piede: -78, busto: -2, testa: -4, bracciosx: [194, 16], bracciodx: [164, -14], gambasx: [188, 6], gambadx: [172, -6] } },
 
     { t: 0.28,                                   /* si avvicinano e si cercano */
       lui: { hip: [44, 96], busto: 6,  testa: 6,  bracciosx: [128, 6],  bracciodx: [116, 10], gambasx: [196, 12], gambadx: [166, -14] },
-      lei: { hip: [78, 96], busto: -6, testa: -6, bracciosx: [256, -34], bracciodx: [210, 26], gambasx: [164, -12], gambadx: [194, 14] } },
+      lei: { hip: [78, 96], codaAng: -150, piede: -78, busto: -6, testa: -6, bracciosx: [256, -34], bracciodx: [210, 26], gambasx: [164, -12], gambadx: [194, 14] } },
 
     { t: 0.55,                                   /* mani unite, lei inizia a salire */
       lui: { hip: [46, 96], busto: 8,  testa: 2,  bracciosx: [110, 4],  bracciodx: [100, 8],  gambasx: [200, 16], gambadx: [160, -18] },
-      lei: { hip: [76, 78], busto: 10, testa: 6,  bracciosx: [244, -26], bracciodx: [200, 30], gambasx: [214, 30], gambadx: [188, -14] } },
+      lei: { hip: [76, 78], codaAng: -138, piede: -40, busto: 10, testa: 6,  bracciosx: [244, -26], bracciodx: [200, 30], gambasx: [214, 30], gambadx: [188, -14] } },
 
     { t: 0.80,                                   /* stacco: lui alza, lei si distende */
       lui: { hip: [42, 98], busto: 6,  testa: 2,  bracciosx: [52, 6],   bracciodx: [42, 8],   gambasx: [196, 12], gambadx: [166, -14] },
-      lei: { hip: [63, 58], busto: -48, testa: 14, bracciosx: [225, 10],  bracciodx: [245, -10], gambasx: [118, -8], gambadx: [140, -16] } },
+      lei: { hip: [63, 58], codaAng: -20,  piede: 12, busto: -48, testa: 14, bracciosx: [225, 10],  bracciodx: [245, -10], gambasx: [118, -8], gambadx: [140, -16] } },
 
     { t: 1.00,                                   /* presa dell'angelo: lei orizzontale e inarcata sopra di lui */
       lui: { hip: [40, 98], busto: 8,  testa: 2,  bracciosx: [32, 6],   bracciodx: [24, 8],   gambasx: [196, 10], gambadx: [166, -12] },
-      lei: { hip: [59, 50], busto: -98, testa: 30, bracciosx: [215, 15],  bracciodx: [235, -12], gambasx: [108, -20], gambadx: [126, -14] } }
+      lei: { hip: [59, 50], codaAng: 50,   piede: 14, busto: -98, testa: 30, bracciosx: [215, 15],  bracciodx: [235, -12], gambasx: [108, -20], gambadx: [126, -14] } }
   ];
 
   function lerp(a, b, k) { return a + (b - a) * k; }
@@ -271,6 +277,9 @@
               busto: lerp(A.busto, Bp.busto, k), testa: lerp(A.testa, Bp.testa, k) };
     ['bracciosx', 'bracciodx', 'gambasx', 'gambadx'].forEach(function (m) {
       o[m] = [lerp(A[m][0], Bp[m][0], k), lerp(A[m][1], Bp[m][1], k)];
+    });
+    ['codaAng', 'piede'].forEach(function (m) {
+      if (A[m] != null && Bp[m] != null) o[m] = lerp(A[m], Bp[m], k);
     });
     return o;
   }
@@ -304,7 +313,7 @@
       if (Math.abs(t - ultimo) < 0.004) return;
       ultimo = t;
       var p = posaA(t);
-      p.lui.verso = 1; p.lei.verso = -1; p.lei.coda = 1;   /* si guardano */
+      p.lui.verso = 1; p.lei.verso = 1; p.lei.coda = 1;    /* lei di spalle a lui */
       tela.innerHTML = corpoDi(p.lui, VERM) + corpoDi(p.lei, LIME) +
                        bracciaDi(p.lei, LIME) + bracciaDi(p.lui, VERM);
     };
