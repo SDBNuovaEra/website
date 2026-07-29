@@ -173,6 +173,135 @@
     if (!canHover.matches && !e.target.closest('.team-card')) chiudiTutte();
   });
 
+
+  /* ---- Ballerini che completano una presa seguendo lo scorrimento ----------
+     Armatura a segmenti: ogni arto ha angoli propri, interpolati fra pose
+     chiave. Cosi' il movimento e' continuo e legato al punto esatto di
+     scorrimento, non una sequenza di disegni fissi. */
+  var LIME = '#C6D62E', VERM = '#E23C24';
+
+  function pt(x, y, ang, len) {
+    var r = ang * Math.PI / 180;
+    return [x + len * Math.sin(r), y - len * Math.cos(r)];
+  }
+
+  /* Misure del corpo, in unita' del viewBox */
+  var B = { torso: 24, collo: 4.5, testa: 7.6, omero: 12, avamb: 11.5, coscia: 13.5, tibia: 13 };
+
+  /* Calcola tutti i punti di un ballerino a partire dai suoi angoli */
+  function scheletro(p) {
+    var hip = p.hip;
+    var sh  = pt(hip[0], hip[1], p.busto, B.torso);
+    var col = pt(sh[0], sh[1], p.busto + (p.testa || 0), B.collo);
+    var cap = pt(col[0], col[1], p.busto + (p.testa || 0), B.testa * 0.85);
+    var gom = {}, man = {}, gin = {}, pie = {};
+    ['sx', 'dx'].forEach(function (k) {
+      var a = p['braccio' + k];
+      gom[k] = pt(sh[0], sh[1], a[0], B.omero);
+      man[k] = pt(gom[k][0], gom[k][1], a[0] + a[1], B.avamb);
+      var g = p['gamba' + k];
+      gin[k] = pt(hip[0], hip[1], g[0], B.coscia);
+      pie[k] = pt(gin[k][0], gin[k][1], g[0] + g[1], B.tibia);
+    });
+    return { hip: hip, sh: sh, cap: cap, gom: gom, man: man, gin: gin, pie: pie };
+  }
+
+  function seg(a, b, w, col) {
+    return '<path d="M' + a[0].toFixed(1) + ' ' + a[1].toFixed(1) +
+           'L' + b[0].toFixed(1) + ' ' + b[1].toFixed(1) +
+           '" stroke="' + col + '" stroke-width="' + w + '" stroke-linecap="round" fill="none"/>';
+  }
+
+  /* Corpo e braccia separati: le braccia di chi sorregge vanno disegnate
+     sopra a tutto, altrimenti spariscono dietro al corpo sollevato. */
+  function corpoDi(p, col) {
+    var s = scheletro(p), o = [];
+    o.push(seg(s.hip, s.gin.sx, 8.2, col), seg(s.gin.sx, s.pie.sx, 6.8, col));
+    o.push(seg(s.hip, s.gin.dx, 8.2, col), seg(s.gin.dx, s.pie.dx, 6.8, col));
+    o.push(seg(s.hip, s.sh, 11.5, col));
+    o.push('<circle cx="' + s.cap[0].toFixed(1) + '" cy="' + s.cap[1].toFixed(1) +
+           '" r="' + B.testa + '" fill="' + col + '"/>');
+    return o.join('');
+  }
+
+  function bracciaDi(p, col) {
+    var s = scheletro(p);
+    return seg(s.sh, s.gom.sx, 6.8, col) + seg(s.gom.sx, s.man.sx, 5.6, col) +
+           seg(s.sh, s.gom.dx, 6.8, col) + seg(s.gom.dx, s.man.dx, 5.6, col);
+  }
+
+  /* ---- Pose chiave: da staccati (0) alla presa dell'angelo (1) ---- */
+  var POSE = [
+    { t: 0.00,
+      lui: { hip: [34, 96], busto: 2,  testa: 4,  bracciosx: [196, 14], bracciodx: [166, -16], gambasx: [188, 6], gambadx: [172, -6] },
+      lei: { hip: [86, 96], busto: -2, testa: -4, bracciosx: [194, 16], bracciodx: [164, -14], gambasx: [188, 6], gambadx: [172, -6] } },
+
+    { t: 0.28,                                   /* si avvicinano e si cercano */
+      lui: { hip: [44, 96], busto: 6,  testa: 6,  bracciosx: [150, 34], bracciodx: [104, -26], gambasx: [196, 12], gambadx: [166, -14] },
+      lei: { hip: [78, 96], busto: -6, testa: -6, bracciosx: [256, -34], bracciodx: [210, 26], gambasx: [164, -12], gambadx: [194, 14] } },
+
+    { t: 0.55,                                   /* mani unite, lei inizia a salire */
+      lui: { hip: [46, 96], busto: 8,  testa: 2,  bracciosx: [96, 22],  bracciodx: [52, -16], gambasx: [200, 16], gambadx: [160, -18] },
+      lei: { hip: [76, 78], busto: 10, testa: 6,  bracciosx: [244, -26], bracciodx: [200, 30], gambasx: [214, 30], gambadx: [188, -14] } },
+
+    { t: 0.80,                                   /* stacco: lui alza, lei si distende */
+      lui: { hip: [56, 98], busto: 2,  testa: 0,  bracciosx: [34, 16],  bracciodx: [14, -12], gambasx: [196, 12], gambadx: [166, -14] },
+      lei: { hip: [50, 56], busto: 66, testa: 14, bracciosx: [136, -30], bracciodx: [92, 26], gambasx: [244, 26], gambadx: [212, -20] } },
+
+    { t: 1.00,                                   /* presa dell'angelo: lei orizzontale e inarcata sopra di lui */
+      lui: { hip: [60, 98], busto: 0,  testa: 0,  bracciosx: [14, 8],   bracciodx: [-8, -6], gambasx: [192, 8], gambadx: [168, -10] },
+      lei: { hip: [34, 48], busto: 94, testa: 22, bracciosx: [172, -36], bracciodx: [128, 32], gambasx: [272, 22], gambadx: [248, -18] } }
+  ];
+
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function lerpPosa(A, Bp, k) {
+    var o = { hip: [lerp(A.hip[0], Bp.hip[0], k), lerp(A.hip[1], Bp.hip[1], k)],
+              busto: lerp(A.busto, Bp.busto, k), testa: lerp(A.testa, Bp.testa, k) };
+    ['bracciosx', 'bracciodx', 'gambasx', 'gambadx'].forEach(function (m) {
+      o[m] = [lerp(A[m][0], Bp[m][0], k), lerp(A[m][1], Bp[m][1], k)];
+    });
+    return o;
+  }
+
+  function posaA(t) {
+    t = Math.max(0, Math.min(1, t));
+    for (var i = 0; i < POSE.length - 1; i++) {
+      if (t <= POSE[i + 1].t) {
+        var k = (t - POSE[i].t) / (POSE[i + 1].t - POSE[i].t);
+        k = k * k * (3 - 2 * k);                   /* addolcisce gli estremi */
+        return { lui: lerpPosa(POSE[i].lui, POSE[i + 1].lui, k),
+                 lei: lerpPosa(POSE[i].lei, POSE[i + 1].lei, k) };
+      }
+    }
+    var u = POSE[POSE.length - 1];
+    return { lui: u.lui, lei: u.lei };
+  }
+
+
+  var palco = $('#ballerini');
+  if (palco && !reduce) {
+    var tela = $('svg', palco), ultimo = -1;
+    /* Aggiornamento diretto nel gestore dello scorrimento: il browser lo chiama
+       gia' a ritmo di fotogramma e il disegno costa pochissimo (18 segmenti).
+       Evita di dipendere da requestAnimationFrame, che se non parte lascerebbe
+       i ballerini bloccati sulla posa iniziale. */
+    var aggiorna = function () {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var t = max > 0 ? window.scrollY / max : 0;
+      t = Math.max(0, Math.min(1, t));
+      if (Math.abs(t - ultimo) < 0.004) return;
+      ultimo = t;
+      var p = posaA(t);
+      tela.innerHTML = corpoDi(p.lui, VERM) + corpoDi(p.lei, LIME) +
+                       bracciaDi(p.lei, LIME) + bracciaDi(p.lui, VERM);
+    };
+    on(window, 'scroll', aggiorna, { passive: true });
+    on(window, 'resize', aggiorna, { passive: true });
+    /* a caricamento finito le immagini hanno cambiato l'altezza del documento */
+    on(window, 'load', aggiorna);
+    aggiorna();
+  }
+
   /* ---- Gallery lightbox (navigabile: frecce, tastiera, swipe) ---- */
   var lb = $('#lightbox');
   var lbImg = $('#lightboxImg');
