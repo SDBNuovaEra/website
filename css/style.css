@@ -336,13 +336,19 @@ em,.accent{font-style:normal;color:var(--brand)}
   .nav-toggle{display:flex}
   .site-header{background:rgba(17,15,22,.9);backdrop-filter:blur(12px);padding-top:.75rem;padding-bottom:.75rem}
   .site-header .brand-logo{height:50px}
-  .nav{position:fixed;top:0;left:0;right:0;bottom:0;z-index:var(--z-menu);flex-direction:column;justify-content:center;gap:.4rem;background:rgba(15,13,18,.97);backdrop-filter:blur(10px);transform:translateX(100%);transition:transform .4s var(--ease);display:flex}
+  .nav{position:fixed;top:0;left:0;right:0;bottom:0;z-index:var(--z-menu);flex-direction:column;justify-content:flex-start;
+    gap:.35rem;background:rgba(15,13,18,.97);backdrop-filter:blur(10px);transform:translateX(100%);
+    transition:transform .4s var(--ease);display:flex;
+    /* in basso lo spazio dei due pulsanti, in alto quello della barra */
+    padding:5.5rem 1rem 11rem;overflow-y:auto;overscroll-behavior:contain}
   /* Il backdrop-filter sull'intestazione la rende il riferimento per i figli
      in posizione fissa: senza toglierlo il menu resta alto quanto la barra.
      A menu aperto non serve, perche' il pannello copre tutto lo schermo. */
   body.menu-open .site-header{backdrop-filter:none;background:transparent;box-shadow:none}
   body.menu-open .nav{transform:none}
   body.menu-open{overflow:hidden}
+  /* il tondo WhatsApp galleggia sopra al menu e copre l'ultima voce */
+  body.menu-open .wa-float{display:none}
   .nav a{font-family:var(--font-display);font-size:1.6rem;font-weight:600;padding:.5rem 1rem}
   .nav a.active::after{display:none}
   body.menu-open .header-cta{display:flex;position:fixed;bottom:2.5rem;left:50%;transform:translateX(-50%);z-index:var(--z-menu);flex-direction:column;width:min(80%,320px)}
