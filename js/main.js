@@ -237,20 +237,20 @@
       lei: { hip: [86, 96], busto: -2, testa: -4, bracciosx: [194, 16], bracciodx: [164, -14], gambasx: [188, 6], gambadx: [172, -6] } },
 
     { t: 0.28,                                   /* si avvicinano e si cercano */
-      lui: { hip: [44, 96], busto: 6,  testa: 6,  bracciosx: [150, 34], bracciodx: [104, -26], gambasx: [196, 12], gambadx: [166, -14] },
+      lui: { hip: [44, 96], busto: 6,  testa: 6,  bracciosx: [128, 6],  bracciodx: [116, 10], gambasx: [196, 12], gambadx: [166, -14] },
       lei: { hip: [78, 96], busto: -6, testa: -6, bracciosx: [256, -34], bracciodx: [210, 26], gambasx: [164, -12], gambadx: [194, 14] } },
 
     { t: 0.55,                                   /* mani unite, lei inizia a salire */
-      lui: { hip: [46, 96], busto: 8,  testa: 2,  bracciosx: [96, 22],  bracciodx: [52, -16], gambasx: [200, 16], gambadx: [160, -18] },
+      lui: { hip: [46, 96], busto: 8,  testa: 2,  bracciosx: [110, 4],  bracciodx: [100, 8],  gambasx: [200, 16], gambadx: [160, -18] },
       lei: { hip: [76, 78], busto: 10, testa: 6,  bracciosx: [244, -26], bracciodx: [200, 30], gambasx: [214, 30], gambadx: [188, -14] } },
 
     { t: 0.80,                                   /* stacco: lui alza, lei si distende */
-      lui: { hip: [42, 98], busto: 6,  testa: 2,  bracciosx: [56, 14],  bracciodx: [34, -12], gambasx: [196, 12], gambadx: [166, -14] },
-      lei: { hip: [66, 62], busto: -12, testa: -8, bracciosx: [318, -26], bracciodx: [26, 30], gambasx: [158, 20], gambadx: [176, -14] } },
+      lui: { hip: [42, 98], busto: 6,  testa: 2,  bracciosx: [52, 6],   bracciodx: [42, 8],   gambasx: [196, 12], gambadx: [166, -14] },
+      lei: { hip: [63, 58], busto: -48, testa: 14, bracciosx: [325, -22], bracciodx: [235, 28], gambasx: [118, -8], gambadx: [140, -16] } },
 
     { t: 1.00,                                   /* presa dell'angelo: lei orizzontale e inarcata sopra di lui */
-      lui: { hip: [40, 98], busto: 8,  testa: 2,  bracciosx: [46, 12],  bracciodx: [28, -10], gambasx: [196, 10], gambadx: [166, -12] },
-      lei: { hip: [67, 51], busto: -28, testa: -20, bracciosx: [302, -28], bracciodx: [12, 38], gambasx: [146, 24], gambadx: [170, -16] } }
+      lui: { hip: [40, 98], busto: 8,  testa: 2,  bracciosx: [32, 6],   bracciodx: [24, 8],   gambasx: [196, 10], gambadx: [166, -12] },
+      lei: { hip: [59, 50], busto: -90, testa: 22, bracciosx: [305, -20], bracciodx: [255, 22], gambasx: [102, -18], gambadx: [122, -14] } }
   ];
 
   function lerp(a, b, k) { return a + (b - a) * k; }
