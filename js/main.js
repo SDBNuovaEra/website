@@ -432,23 +432,42 @@
       });
     });
 
+    /* La rotazione parte solo quando la sezione entra in vista: altrimenti al
+       momento in cui ci si arriva le prime discipline sono gia' passate.
+       Rientrando si riparte sempre dalla prima. */
+    var inVista = false;
     var applyMode = function () {
       if (mq.matches) {
         stopMob();
         tiles.forEach(function (t) { t.classList.remove('active'); });
-        offset = 0; layout(); startRot();
+        offset = 0; layout();
+        if (inVista) startRot();
       } else {
         stopRot();
         clearPos(); resetBars();
-        setActive(0); startMob();
+        setActive(0);
+        if (inVista) startMob();
       }
     };
-    applyMode();
+    applyMode();                                  /* dispone le tessere, ferme */
     if (mq.addEventListener) mq.addEventListener('change', applyMode);
     on(acc, 'mouseenter', function () { if (mq.matches) stopRot(); });
-    on(acc, 'mouseleave', function () { if (mq.matches) startRot(); });
+    on(acc, 'mouseleave', function () { if (mq.matches && inVista) startRot(); });
     on(document, 'visibilitychange', function () {
-      if (document.hidden) { stopRot(); stopMob(); } else { applyMode(); }
+      if (document.hidden) { stopRot(); stopMob(); } else if (inVista) applyMode();
     });
+    if ('IntersectionObserver' in window) {
+      /* i margini negativi fanno scattare l'avvio quando la sezione e' davvero
+         al centro dello schermo, non appena ne spunta un bordo */
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting === inVista) return;
+          inVista = en.isIntersecting;
+          if (inVista) applyMode(); else { stopRot(); stopMob(); }
+        });
+      }, { rootMargin: '-15% 0px -15% 0px', threshold: 0 }).observe(acc);
+    } else {
+      inVista = true; applyMode();
+    }
   }
 })();
