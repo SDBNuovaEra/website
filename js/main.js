@@ -470,4 +470,173 @@
       inVista = true; applyMode();
     }
   }
+  /* ---- Contenuti dal foglio Google -----------------------------------------
+     Eventi, Open Day e orari delle lezioni stanno in un foglio con tre schede.
+     Il proprietario modifica il foglio e il sito si aggiorna da solo: nessun
+     caricamento su Netlify, quindi nessun credito consumato.
+     Se il foglio non risponde la pagina resta com'e' (i riquadri "in arrivo"),
+     percio' un guasto di Google non lascia mai il sito con informazioni false.
+     Il foglio dev'essere condiviso in lettura con "chiunque abbia il link". */
+  var FOGLIO = '1snwdwXEe8BlrTfTEOwpx-etEszq75bPUHZ0YrE-bjB0';
+  var schedaUrl = function (nome) {
+    return 'https://docs.google.com/spreadsheets/d/' + FOGLIO +
+           '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(nome);
+  };
+
+  var MESI_BR = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+  var GIORNI = ['Lunedi', 'Martedi', 'Mercoledi', 'Giovedi', 'Venerdi', 'Sabato', 'Domenica'];
+
+  /* accenti e maiuscole vanno ignorati: il foglio lo compila una persona */
+  var norm = function (v) {
+    var s = String(v == null ? '' : v).trim().toLowerCase();
+    return s.normalize ? s.normalize('NFD').replace(/[̀-ͯ]/g, '') : s;
+  };
+  var esc = function (v) {
+    return String(v == null ? '' : v).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  };
+
+  /* CSV con virgolette, virgole e a capo dentro le celle */
+  var leggiCsv = function (txt) {
+    var righe = [], riga = [], campo = '', apice = false, i, c;
+    for (i = 0; i < txt.length; i++) {
+      c = txt.charAt(i);
+      if (apice) {
+        if (c === '"') { if (txt.charAt(i + 1) === '"') { campo += '"'; i++; } else apice = false; }
+        else campo += c;
+      } else if (c === '"') apice = true;
+      else if (c === ',') { riga.push(campo); campo = ''; }
+      else if (c === '\n') { riga.push(campo); righe.push(riga); riga = []; campo = ''; }
+      else if (c !== '\r') campo += c;
+    }
+    riga.push(campo); righe.push(riga);
+    return righe.filter(function (r) {
+      return r.some(function (x) { return String(x).trim() !== ''; });
+    });
+  };
+
+  /* "Mostra sul sito?" -> valore nella colonna accanto */
+  var valoreDi = function (righe, etichetta) {
+    var e = norm(etichetta), i;
+    for (i = 0; i < righe.length; i++)
+      if (norm(righe[i][0]).indexOf(e) === 0) return String(righe[i][1] || '').trim();
+    return '';
+  };
+
+  /* Trova la riga di intestazione e restituisce le righe sotto come oggetti:
+     cosi' si possono aggiungere note o righe sopra la tabella senza rompere nulla. */
+  var tabellaDa = function (righe, prima) {
+    var p = norm(prima), i, k, intest, out = [], o, pieno;
+    for (i = 0; i < righe.length; i++) if (norm(righe[i][0]) === p) break;
+    if (i >= righe.length) return out;
+    intest = righe[i].map(norm);
+    for (i = i + 1; i < righe.length; i++) {
+      o = {}; pieno = false;
+      for (k = 0; k < intest.length; k++) {
+        if (!intest[k]) continue;
+        o[intest[k]] = String(righe[i][k] == null ? '' : righe[i][k]).trim();
+        if (o[intest[k]]) pieno = true;
+      }
+      if (pieno) out.push(o);
+    }
+    return out;
+  };
+
+  var aData = function (v) {
+    var s = String(v == null ? '' : v).trim(), m, a;
+    m = s.match(/^Date\((\d+),(\d+),(\d+)\)$/);                  /* forma tecnica di Google */
+    if (m) return new Date(+m[1], +m[2], +m[3]);
+    m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);  /* 24/06/2026 */
+    if (m) { a = +m[3]; return new Date(a < 100 ? a + 2000 : a, +m[2] - 1, +m[1]); }
+    m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);                /* 2026-06-24 */
+    if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+    return null;
+  };
+
+  var attivo = function (v) { return /^(si|s|1|vero|x)$/.test(norm(v)); };
+
+  var vociOra = function (r) {
+    return '<span class="ora"><b>' + esc(r['ora inizio']) + '</b>' +
+           (r['ora fine'] ? '<i>– ' + esc(r['ora fine']) + '</i>' : '') +
+           '</span><span class="disc">' + esc(r.disciplina) + '</span>';
+  };
+
+  var prendi = function (nome) {
+    return fetch(schedaUrl(nome), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(leggiCsv);
+  };
+
+  var NIENTE_EVENTI = '<li class="tl-vuota"><div class="tl-body"><p>Nessun appuntamento in calendario '
+    + 'in questo momento. Scrivici su WhatsApp: i prossimi si stanno già preparando.</p></div></li>';
+
+  /* --- eventi: restano nel foglio, ma dal sito spariscono quelli passati --- */
+  var tl = $('#timeline');
+  if (tl && window.fetch) {
+    prendi('Eventi').then(function (righe) {
+      var oggi = new Date(); oggi.setHours(0, 0, 0, 0);
+      var futuri = tabellaDa(righe, 'Data').map(function (r) {
+        return { d: aData(r.data), tit: r.titolo, txt: r.descrizione };
+      }).filter(function (e) {
+        return e.d && e.d >= oggi && e.tit;
+      }).sort(function (a, b) { return a.d - b.d; });
+
+      if (!futuri.length) { tl.innerHTML = NIENTE_EVENTI; return; }
+      tl.innerHTML = futuri.map(function (e) {
+        return '<li><span class="tl-date"><b>' + e.d.getDate() + '</b>' + MESI_BR[e.d.getMonth()] +
+               '</span><div class="tl-body"><h3>' + esc(e.tit) + '</h3>' +
+               (e.txt ? '<p>' + esc(e.txt) + '</p>' : '') + '</div></li>';
+      }).join('');
+    })['catch'](function () { tl.innerHTML = NIENTE_EVENTI; });   /* meglio dirlo che lasciare il vuoto */
+  }
+
+  /* --- Open Day: interruttore, data e orari della giornata ----------------- */
+  var odAttesa = $('#openDayAttesa');
+  if (odAttesa && window.fetch) {
+    prendi('Open Day').then(function (righe) {
+      var slot = tabellaDa(righe, 'Ora inizio');
+      if (!attivo(valoreDi(righe, 'Mostra sul sito')) || !slot.length) return;
+
+      var ul = document.createElement('ul');
+      ul.className = 'openday-slot';
+      ul.innerHTML = slot.map(function (r) { return '<li>' + vociOra(r) + '</li>'; }).join('');
+      odAttesa.parentNode.replaceChild(ul, odAttesa);
+
+      var d = aData(valoreDi(righe, 'Data')), nota = $('.openday-nota'), t;
+      if (d && nota) {
+        t = d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        nota.textContent = t.charAt(0).toUpperCase() + t.slice(1) + '.';
+      }
+    })['catch'](function () {});
+  }
+
+  /* --- orari settimanali: una scheda per giorno ---------------------------- */
+  var orAttesa = $('#orariAttesa');
+  if (orAttesa && window.fetch) {
+    prendi('Orari lezioni').then(function (righe) {
+      var lez = tabellaDa(righe, 'Giorno');
+      if (!attivo(valoreDi(righe, 'Mostra sul sito')) || !lez.length) return;
+
+      var perGiorno = {};
+      lez.forEach(function (r) {
+        var g = norm(r.giorno);
+        if (!perGiorno[g]) perGiorno[g] = [];
+        perGiorno[g].push(r);
+      });
+      /* prima i giorni nell'ordine della settimana, poi eventuali nomi non previsti */
+      var ordine = GIORNI.map(norm).filter(function (g) { return perGiorno[g]; });
+      Object.keys(perGiorno).forEach(function (g) { if (ordine.indexOf(g) < 0) ordine.push(g); });
+
+      var griglia = document.createElement('div');
+      griglia.className = 'orari-grid';
+      griglia.innerHTML = ordine.map(function (g) {
+        return '<article class="giorno"><h3 class="giorno-nome">' + esc(perGiorno[g][0].giorno) + '</h3>' +
+               '<ul class="giorno-lezioni">' +
+               perGiorno[g].map(function (r) { return '<li>' + vociOra(r) + '</li>'; }).join('') +
+               '</ul></article>';
+      }).join('');
+      orAttesa.parentNode.replaceChild(griglia, orAttesa);
+    })['catch'](function () {});
+  }
 })();

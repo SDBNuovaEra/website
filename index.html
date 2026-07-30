@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Poppins:wght@400;500;600&family=Kaushan+Script&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/style.css?v=71">
+<link rel="stylesheet" href="css/style.css?v=72">
 
 <!-- Dati struttrati: aiutano Google a mostrare indirizzo, telefono e mappa nelle ricerche locali -->
 <script type="application/ld+json">
@@ -149,7 +149,7 @@
         <a class="btn btn-primary btn-sm" href="https://wa.me/393381866161?text=Ciao%21%20Vorrei%20prenotare%20un%20posto%20per%20l%27Open%20Day." target="_blank" rel="noopener">Prenota il tuo posto</a>
         <p class="openday-nota">Data in via di definizione.</p>
       </div>
-      <div class="attesa">
+      <div class="attesa" id="openDayAttesa">
         <span class="attesa-ico" aria-hidden="true">✶</span>
         <p class="attesa-tit">Programma in arrivo</p>
         <p class="attesa-txt">Stiamo definendo le lezioni della giornata: a breve trovi qui tutti gli orari.</p>
@@ -157,7 +157,7 @@
     </div>
 
     <h3 class="orari-sub reveal">Orari settimanali dei corsi</h3>
-    <div class="attesa attesa--settimana reveal">
+    <div class="attesa attesa--settimana reveal" id="orariAttesa">
       <span class="attesa-ico" aria-hidden="true">✶</span>
       <p class="attesa-tit">A breve in arrivo</p>
       <p class="attesa-txt">Il calendario settimanale è in preparazione. Contattaci su <a href="https://wa.me/393381866161?text=Ciao%21%20Vorrei%20essere%20avvisato%20quando%20saranno%20disponibili%20gli%20orari%20delle%20lezioni." target="_blank" rel="noopener">WhatsApp</a> se vuoi essere avvisato in privato non appena saranno disponibili.</p>
@@ -425,11 +425,7 @@
       <a class="btn btn-primary" href="https://wa.me/393381866161?text=Ciao!%20Vorrei%20info%20sui%20prossimi%20eventi." target="_blank" rel="noopener">Chiedi info eventi</a>
     </div>
 
-    <ul class="timeline">
-      <li class="reveal"><span class="tl-date"><b>30</b>Nov</span><div class="tl-body"><h3>Grumento Nova</h3><p>Trasferta e serata di ballo con il gruppo della scuola.</p></div></li>
-      <li class="reveal"><span class="tl-date"><b>19</b>Set</span><div class="tl-body"><h3>Weekend di Fine Estate</h3><p>Due giorni di musica, balli e divertimento per salutare l'estate.</p></div></li>
-      <li class="reveal"><span class="tl-date"><b>24</b>Giu</span><div class="tl-body"><h3>Milonga de la Playa</h3><p>Tango sotto le stelle: una serata di milonga in riva al mare.</p></div></li>
-    </ul>
+    <ul class="timeline" id="timeline"></ul>
   </div>
 </section>
 
@@ -534,7 +530,7 @@
   </div>
 
   <div class="wrap footer-bottom">
-    <p>© <span id="year">2026</span> Scuola di Ballo Nuova Era · Conversano (BA) · Tutti i diritti riservati</p>
+    <p>© <span id="year">2026</span> Scuola di Ballo Nuova Era · Conversano (BA) · Tutti i diritti riservati<br><span class="footer-firma">Realizzato da <a href="mailto:gioparadiso95@gmail.com">Giovanni Paradiso</a></span></p>
     <p class="footer-cta"><a class="btn btn-primary btn-sm" href="https://wa.me/393381866161?text=Ciao!%20Vorrei%20informazioni%20sui%20corsi." target="_blank" rel="noopener">Scrivici su WhatsApp</a></p>
   </div>
 </footer>
@@ -552,6 +548,6 @@
   <span class="lb-count" id="lightboxCount"></span>
 </dialog>
 
-<script src="js/main.js?v=72"></script>
+<script src="js/main.js?v=73"></script>
 </body>
 </html>
