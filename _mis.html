@@ -138,7 +138,7 @@
     <header class="section-head reveal">
       <p class="kicker">Quando si balla</p>
       <h2>Orari delle <span class="script">lezioni</span></h2>
-      <p class="section-sub">L'Open Day e i corsi settimanali. La prima lezione è sempre gratuita: vieni a provare quando preferisci.</p>
+      <p class="section-sub">Il calendario settimanale dei corsi. La prima lezione è sempre gratuita: vieni a provare quando preferisci.</p>
     </header>
 
     <div class="openday reveal">
@@ -549,5 +549,40 @@
 </dialog>
 
 <script src="js/main.js?v=72"></script>
+<script>
+addEventListener('load',function(){
+  setTimeout(function(){
+    var out=[];
+    try{
+      var acc=document.getElementById('accordion');
+      var R=acc.getBoundingClientRect();
+      out.push('accordion '+Math.round(R.width)+'x'+Math.round(R.height));
+      var celle=[];
+      [].forEach.call(acc.querySelectorAll('.tile'),function(t){
+        var r=t.getBoundingClientRect();
+        var m=t.className.match(/pos[0-9]+/);
+        var ti=t.querySelector('.tile-title');
+        celle.push({p:m?m[0]:'-', n:m?parseInt(m[0].slice(3)):99,
+          x:Math.round(r.left-R.left), y:Math.round(r.top-R.top),
+          w:Math.round(r.width), h:Math.round(r.height),
+          tit:ti?ti.textContent:'?', th:ti?Math.round(ti.getBoundingClientRect().height):0,
+          ch:Math.round(t.querySelector('.tile-content').getBoundingClientRect().height)});
+      });
+      celle.sort(function(a,b){return a.n-b.n;});
+      celle.forEach(function(c){
+        out.push(c.p+' x'+c.x+' y'+c.y+' '+c.w+'x'+c.h+' "'+c.tit+'" testo h'+c.ch+(c.ch>c.h+1?'  DEBORDA':''));
+      });
+      var bad=[];
+      for(var i=0;i<celle.length;i++){ var a=celle[i];
+        if(a.x<-1||a.y<-1||a.x+a.w>R.width+1||a.y+a.h>R.height+1) bad.push(a.p+' fuori');
+        for(var j=i+1;j<celle.length;j++){ var b=celle[j];
+          if(a.x<b.x+b.w-2&&b.x<a.x+a.w-2&&a.y<b.y+b.h-2&&b.y<a.y+a.h-2) bad.push(a.p+'/'+b.p+' sovrapposte'); } }
+      out.push('problemi: '+(bad.length?bad.join(', '):'nessuno'));
+    }catch(e){ out.push('ERRORE: '+e.message); }
+    var d=document.createElement('pre'); d.id='esito'; d.textContent=out.join('\n');
+    document.body.appendChild(d);
+  },1500);
+});
+</script>
 </body>
 </html>
