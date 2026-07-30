@@ -471,6 +471,13 @@ em,.accent{font-style:normal;color:var(--brand)}
   .sala{grid-column:2;justify-self:start;margin-top:.15rem}
 }
 
+/* Open Day su piu' giorni: l'intestazione del giorno occupa tutta la riga
+   della griglia delle fasce. Con un giorno solo non compare affatto. */
+.openday-slot .od-data{grid-column:1/-1;display:block;font-family:var(--font-display);
+  font-weight:700;color:#fff;font-size:.88rem;letter-spacing:.02em;
+  padding-bottom:.3rem;margin-top:.65rem;border-bottom:1px solid rgba(255,255,255,.16)}
+.openday-slot .od-data:first-child{margin-top:0}
+
 .orari-sub{color:#fff;margin-top:2.4rem;margin-bottom:.2rem;font-size:1.15rem}
 
 .orari-nota{margin-top:1.4rem;color:var(--on-dark-soft);font-size:.88rem}

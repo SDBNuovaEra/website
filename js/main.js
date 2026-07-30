@@ -574,19 +574,50 @@
     if (tl.children.length > EVENTI_VISTI) scorriEventi();
   };
 
-  /* --- Open Day: fasce della giornata al posto del riquadro d'attesa --- */
+  /* --- Open Day: le fasce al posto del riquadro d'attesa -------------------
+     L'Open Day puo' durare piu' giorni: ogni fascia porta la sua data. Se le
+     date sono piu' d'una si intercala un'intestazione per giorno, se e' una
+     sola resta la lista semplice di prima. */
+  var CAP = function (t) { return t.charAt(0).toUpperCase() + t.slice(1); };
+  var giornoLungo = function (iso, anno) {
+    var d = giornoDa(iso);
+    if (!d) return '';
+    var f = { weekday: 'long', day: 'numeric', month: 'long' };
+    if (anno) f.year = 'numeric';
+    return d.toLocaleDateString('it-IT', f);
+  };
+  var periodo = function (giorni) {
+    if (!giorni.length) return '';
+    if (giorni.length === 1) return CAP(giornoLungo(giorni[0], true)) + '.';
+    return 'Da ' + giornoLungo(giorni[0]) + ' a ' + giornoLungo(giorni[giorni.length - 1], true) + '.';
+  };
+
   var mostraOpenDay = function (od) {
     if (!od.fasce || !od.fasce.length) return;
+
+    var giorni = [];
+    od.fasce.forEach(function (f) { if (f.data && giorni.indexOf(f.data) < 0) giorni.push(f.data); });
+
+    var html = '', corrente = null;
+    od.fasce.forEach(function (f) {
+      if (giorni.length > 1 && f.data && f.data !== corrente) {
+        corrente = f.data;
+        html += '<li class="od-data">' + esc(CAP(giornoLungo(f.data))) + '</li>';
+      }
+      html += '<li>' + vociOra(f) + '</li>';
+    });
+
     var ul = document.createElement('ul');
     ul.className = 'openday-slot';
-    ul.innerHTML = od.fasce.map(function (r) { return '<li>' + vociOra(r) + '</li>'; }).join('');
+    ul.innerHTML = html;
     odAttesa.parentNode.replaceChild(ul, odAttesa);
 
-    var d = giornoDa(od.data), nota = $('.openday-nota'), t;
-    if (d && nota) {
-      t = d.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      nota.textContent = t.charAt(0).toUpperCase() + t.slice(1) + '.';
-    }
+    var nota = $('.openday-nota');
+    if (nota) nota.textContent = periodo(giorni.length ? giorni : (od.data ? [od.data] : []));
+
+    /* il titolo scritto nella pagina parla di una giornata sola */
+    var tit = $('.openday-testo h3');
+    if (tit && giorni.length > 1) tit.textContent = giorni.length + ' giorni per provare tutto';
   };
 
   /* --- orari settimanali: una scheda per giorno, sempre da lunedi a domenica --- */
