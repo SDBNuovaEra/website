@@ -513,6 +513,54 @@
 
   var tl = $('#timeline'), odAttesa = $('#openDayAttesa'), orAttesa = $('#orariAttesa');
 
+  /* Oltre questo numero la lista diventa troppo lunga: si accorcia e scorre. */
+  var EVENTI_VISTI = 5;
+
+  /* La lista avanza di un evento alla volta e poi si ferma: il testo sta fermo
+     mentre lo leggi, e lo spostamento lo fa il browser con la sua animazione,
+     che e' fluida. Muovere di mezzo pixel a ogni battito di timer, invece,
+     usciva a scatti (il browser arrotonda al pixel) e dava fastidio a leggere.
+     Va solo mentre la sezione e' sotto gli occhi, e si ferma appena tocchi. */
+  var PASSO_EVENTI = 5000;
+
+  var scorriEventi = function () {
+    var ultimo = tl.children[EVENTI_VISTI - 1], primo = tl.children[0].offsetTop;
+    tl.style.maxHeight = (ultimo.offsetTop + ultimo.offsetHeight - primo) + 'px';
+    tl.classList.add('timeline--scorre');
+    if (reduce) return;                    /* chi ha chiesto meno movimento scorre a mano */
+
+    var i = 0, pausa = false, inVista = false, ripresa = null;
+    var ultimaPartenza = tl.children.length - EVENTI_VISTI;
+
+    setInterval(function () {
+      if (!inVista || pausa) return;
+      i = i >= ultimaPartenza ? 0 : i + 1;
+      tl.scrollTo({ top: tl.children[i].offsetTop - primo, behavior: 'smooth' });
+    }, PASSO_EVENTI);
+
+    var ferma = function () { pausa = true; clearTimeout(ripresa); };
+    var riprendi = function (dopo) {
+      clearTimeout(ripresa);
+      ripresa = setTimeout(function () {
+        /* riparte dall'evento piu' vicino a dove l'utente ha lasciato la lista */
+        var y = tl.scrollTop, k = 0;
+        for (var n = 0; n <= ultimaPartenza; n++) {
+          if (Math.abs(tl.children[n].offsetTop - primo - y) < Math.abs(tl.children[k].offsetTop - primo - y)) k = n;
+        }
+        i = k; pausa = false;
+      }, dopo);
+    };
+    on(tl, 'mouseenter', ferma);
+    on(tl, 'mouseleave', function () { riprendi(600); });
+    on(tl, 'wheel', function () { ferma(); riprendi(5000); }, { passive: true });
+    on(tl, 'touchstart', function () { ferma(); riprendi(5000); }, { passive: true });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (voci) { inVista = voci[0].isIntersecting; },
+        { rootMargin: '-10% 0px -10% 0px' }).observe(tl);
+    } else { inVista = true; }
+  };
+
   /* --- eventi: lo sportello manda solo quelli da oggi in avanti, gia' ordinati --- */
   var mostraEventi = function (lista) {
     if (!lista || !lista.length) { tl.innerHTML = NIENTE_EVENTI; return; }
@@ -523,6 +571,7 @@
              '</span><div class="tl-body"><h3>' + esc(e.titolo) + '</h3>' +
              (e.testo ? '<p>' + esc(e.testo) + '</p>' : '') + '</div></li>';
     }).join('') || NIENTE_EVENTI;
+    if (tl.children.length > EVENTI_VISTI) scorriEventi();
   };
 
   /* --- Open Day: fasce della giornata al posto del riquadro d'attesa --- */

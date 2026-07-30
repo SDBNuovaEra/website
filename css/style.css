@@ -170,15 +170,20 @@ em,.accent{font-style:normal;color:var(--brand)}
   /* Mosaico per 9 discipline: 1 grande a sinistra + 8 piccole (4 + 4).
      L'ordine gira in senso orario. */
   .tile.pos0{left:0;top:0;width:36%;height:100%}
+  /* Percorso a serpentina: ogni posizione tocca la precedente, e la pos9 e' a
+     ridosso del riquadro grande, cosi' anche il rientro nel grande e' un passo
+     corto. Con le tre righe una serpentina normale finirebbe in basso a destra
+     e la tessera attraverserebbe tutto il mosaico per tornare nel grande.
+     Percorso: giu', destra, su, destra, giu', giu', sinistra, sinistra. */
   .tile.pos1{left:36%;top:0}
-  .tile.pos2{left:57.333%;top:0}
-  .tile.pos3{left:78.667%;top:0}
-  .tile.pos4{left:78.667%;top:33.333%}
-  .tile.pos5{left:57.333%;top:33.333%}
-  .tile.pos6{left:36%;top:33.333%}
-  .tile.pos7{left:36%;top:66.667%}
+  .tile.pos2{left:36%;top:33.333%}
+  .tile.pos3{left:57.333%;top:33.333%}
+  .tile.pos4{left:57.333%;top:0}
+  .tile.pos5{left:78.667%;top:0}
+  .tile.pos6{left:78.667%;top:33.333%}
+  .tile.pos7{left:78.667%;top:66.667%}
   .tile.pos8{left:57.333%;top:66.667%}
-  .tile.pos9{left:78.667%;top:66.667%}
+  .tile.pos9{left:36%;top:66.667%}
   .tile-content{padding:1rem}
   .tile.pos0 .tile-content{padding:1.6rem}
   .tile-title{font-size:1.05rem}
@@ -248,6 +253,17 @@ em,.accent{font-style:normal;color:var(--brand)}
 .timeline li::before{content:"";position:absolute;left:-1.5rem;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:var(--brand);border:3px solid var(--mist)}
 .timeline li.tl-vuota::before{display:none}
 .timeline li.tl-vuota{padding-left:0}
+/* Piu' di cinque eventi: la lista si accorcia e scorre. La riga verticale passa
+   dallo pseudo elemento a uno sfondo, perche' un absolute dentro un contenitore
+   che scorre se ne andrebbe via insieme al contenuto. La sfumatura sopra e
+   sotto dice che c'e' altro da vedere. */
+.timeline--scorre{overflow-y:auto;overscroll-behavior:contain;
+  background:linear-gradient(var(--line-light),var(--line-light)) 0 0/2px 100% no-repeat;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0,#000 22px,#000 calc(100% - 22px),transparent 100%)}
+.timeline--scorre::before{display:none}
+.timeline--scorre::-webkit-scrollbar{width:3px}
+.timeline--scorre::-webkit-scrollbar-thumb{background:var(--line-light);border-radius:100px}
 .tl-date{flex:0 0 auto;width:66px;height:66px;border-radius:var(--radius-sm);background:var(--brand);color:#fff;display:grid;place-content:center;text-align:center;line-height:1.05}
 .tl-date b{font-family:var(--font-display);font-weight:800;font-size:1.5rem;display:block}
 .tl-body h3{margin-bottom:.15rem}
