@@ -411,7 +411,12 @@ em,.accent{font-style:normal;color:var(--brand)}
 .giorno-nome{color:#fff;font-size:1.05rem;letter-spacing:.02em;padding-bottom:.7rem;margin-bottom:.5rem;
   border-bottom:1px solid rgba(255,255,255,.12)}
 .giorno-lezioni{display:flex;flex-direction:column;gap:.55rem}
-.giorno-lezioni li{display:flex;align-items:baseline;gap:.7rem;font-size:.93rem}
+.giorno-lezioni li{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem .7rem;font-size:.93rem}
+.giorno-lezioni .disc{flex:1 1 auto}
+/* sala: due corsi possono sovrapporsi in sale diverse, va detto quale */
+.sala{flex:0 0 auto;font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--on-dark-soft);border:1px solid var(--line-dark);border-radius:100px;
+  padding:.1rem .5rem;white-space:nowrap}
 .ora{flex:0 0 auto;display:flex;flex-direction:column;line-height:1.2;min-width:5rem}
 .ora b{color:var(--lime);font-weight:700;font-variant-numeric:tabular-nums}
 .ora i{font-style:normal;color:var(--on-dark-soft);font-size:.8rem;font-variant-numeric:tabular-nums}

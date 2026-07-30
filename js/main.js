@@ -556,10 +556,12 @@
 
   var attivo = function (v) { return /^(si|s|1|vero|x)$/.test(norm(v)); };
 
+  /* la sala compare solo se indicata: due corsi possono coincidere in sale diverse */
   var vociOra = function (r) {
     return '<span class="ora"><b>' + esc(r['ora inizio']) + '</b>' +
            (r['ora fine'] ? '<i>– ' + esc(r['ora fine']) + '</i>' : '') +
-           '</span><span class="disc">' + esc(r.disciplina) + '</span>';
+           '</span><span class="disc">' + esc(r.disciplina) + '</span>' +
+           (r.sala ? '<span class="sala">' + esc(r.sala) + '</span>' : '');
   };
 
   var prendi = function (nome) {
