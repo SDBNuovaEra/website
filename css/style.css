@@ -259,7 +259,7 @@ em,.accent{font-style:normal;color:var(--brand)}
 .gal-item::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(226,60,36,0);transition:background .35s}
 .gal-item:hover img{transform:scale(1.05)}
 .gal-item:hover::after{background:rgba(226,60,36,.18)}
-.ig-follow{text-align:center;margin-top:2.5rem}
+.ig-follow{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;margin-top:2.5rem}
 
 /* CTA band */
 .cta-band{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;padding-top:clamp(3.5rem, 2rem + 5vw, 6rem);padding-bottom:clamp(3.5rem, 2rem + 5vw, 6rem);position:relative;overflow:hidden}
