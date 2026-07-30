@@ -511,6 +511,13 @@
   var NIENTE_EVENTI = '<li class="tl-vuota"><div class="tl-body"><p>Nessun appuntamento in calendario '
     + 'in questo momento. Scrivici su WhatsApp: i prossimi si stanno già preparando.</p></div></li>';
 
+  /* Due messaggi diversi, perche' sono due fatti diversi: "non ce ne sono" lo si
+     puo' dire solo quando lo sportello ha davvero risposto con una lista vuota.
+     Se invece la lettura fallisce non sappiamo niente, e dire che non ci sono
+     eventi sarebbe falso proprio mentre il calendario ne contiene. */
+  var GUASTO_EVENTI = '<li class="tl-vuota"><div class="tl-body"><p>Non riusciamo a caricare il '
+    + 'calendario in questo momento. Scrivici su WhatsApp per i prossimi appuntamenti.</p></div></li>';
+
   var tl = $('#timeline'), odAttesa = $('#openDayAttesa'), orAttesa = $('#orariAttesa');
 
   /* Oltre questo numero la lista diventa troppo lunga: si accorcia e scorre. */
@@ -623,7 +630,9 @@
   /* --- orari settimanali: una scheda per giorno, sempre da lunedi a domenica --- */
   var mostraOrari = function (lezioni) {
     if (!lezioni || !lezioni.length) return;
-    var perGiorno = {};
+    /* le chiavi vengono dal foglio: con un oggetto normale "constructor" o
+       "__proto__" leggerebbero dal prototipo e la riga dopo andrebbe in errore */
+    var perGiorno = Object.create(null);
     lezioni.forEach(function (r) {
       var g = norm(r.giorno);
       if (!perGiorno[g]) perGiorno[g] = [];
@@ -656,7 +665,13 @@
     attese.forEach(function (el) { el.style.visibility = 'hidden'; });
     setTimeout(svela, 6000);                  /* se lo sportello non risponde proprio */
 
-    fetch(SPORTELLO)
+    /* senza scadenza una richiesta appesa non finisce mai nel catch e la lista
+       resterebbe vuota per sempre. AbortSignal.timeout manca sui browser vecchi:
+       li' si resta senza scadenza, come prima, invece di rompere tutto. */
+    var opzioni = {};
+    if (window.AbortSignal && AbortSignal.timeout) opzioni.signal = AbortSignal.timeout(8000);
+
+    fetch(SPORTELLO, opzioni)
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (d) {
         if (tl) mostraEventi(d.eventi);
@@ -664,7 +679,9 @@
         if (orAttesa && d.orari && d.orari.attivo) mostraOrari(d.orari.lezioni);
         svela();
       })['catch'](function () {
-        if (tl) tl.innerHTML = NIENTE_EVENTI;   /* meglio dirlo che lasciare il vuoto */
+        /* il catch sta dopo il then, quindi prende anche gli errori del disegno:
+           senza questa guardia cancellerebbe gli eventi appena scritti */
+        if (tl && !tl.children.length) tl.innerHTML = GUASTO_EVENTI;
         svela();
       });
   }
