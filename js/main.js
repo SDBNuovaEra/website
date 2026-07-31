@@ -386,6 +386,11 @@
 
     // Desktop: ogni riquadro avanza di 1 posizione (a turno nel grande, pos0).
     // Mobile: accordion, si apre uno alla volta. Barra countdown sulla foto grande/aperta.
+    /* L'offset CALA a ogni giro. Aumentandolo le tessere avanzano lungo il
+       percorso e nel riquadro grande entrerebbe quella che sta all'ultima
+       casella, cioe' la lista scorrerebbe all'indietro: dopo Balli Caraibici
+       comparirebbe Karate invece di Tango. Calando, in evidenza si succedono
+       nell'ordine del documento, come gia' fa l'accordion sul telefono. */
     var offset = 0;
     var ROT_INT = 4200, MOB_INT = 4500;
     var bars = tiles.map(function (t) { return t.querySelector('.tile-bar span'); });
@@ -403,7 +408,7 @@
     var layout = function () {
       tiles.forEach(function (t, i) {
         for (var p = 0; p < N; p++) t.classList.remove('pos' + p);
-        t.classList.add('pos' + ((i + offset) % N));
+        t.classList.add('pos' + ((i + offset) % N));   /* vedi il verso in startRot */
       });
     };
     var clearPos = function () {
@@ -411,7 +416,7 @@
     };
     var rotT = null;
     var stopRot = function () { if (rotT) { clearInterval(rotT); rotT = null; } freezeBars(); };
-    var startRot = function () { if (reduce) return; stopRot(); fillFeatured(ROT_INT); rotT = setInterval(function () { offset = (offset + 1) % N; layout(); fillFeatured(ROT_INT); }, ROT_INT); };
+    var startRot = function () { if (reduce) return; stopRot(); fillFeatured(ROT_INT); rotT = setInterval(function () { offset = (offset + N - 1) % N; layout(); fillFeatured(ROT_INT); }, ROT_INT); };
 
     var idx = 0;
     var setActive = function (i) { idx = (i + N) % N; tiles.forEach(function (t, j) { t.classList.toggle('active', j === idx); }); };
