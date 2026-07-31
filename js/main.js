@@ -1,4 +1,4 @@
-/* Nuova Era — main.js (vanilla, no dependencies) */
+/* Nuova Era - main.js (vanilla, no dependencies) */
 (function () {
   'use strict';
   var doc = document.documentElement;
@@ -508,7 +508,7 @@
   /* la sala compare solo se indicata: due corsi possono coincidere in sale diverse */
   var vociOra = function (r) {
     return '<span class="ora"><b>' + esc(r.da) + '</b>' +
-           (r.a ? '<i>– ' + esc(r.a) + '</i>' : '') +
+           (r.a ? '<i>- ' + esc(r.a) + '</i>' : '') +
            '</span><span class="disc">' + esc(r.cosa) + '</span>' +
            (r.sala ? '<span class="sala">' + esc(r.sala) + '</span>' : '');
   };
