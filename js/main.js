@@ -389,7 +389,7 @@
     /* L'offset CALA a ogni giro. Aumentandolo le tessere avanzano lungo il
        percorso e nel riquadro grande entrerebbe quella che sta all'ultima
        casella, cioe' la lista scorrerebbe all'indietro: dopo Balli Caraibici
-       comparirebbe Karate invece di Tango. Calando, in evidenza si succedono
+       comparirebbe Mindfulness invece di Tango. Calando, in evidenza si succedono
        nell'ordine del documento, come gia' fa l'accordion sul telefono. */
     var offset = 0;
     var ROT_INT = 4200, MOB_INT = 4500;
