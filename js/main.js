@@ -524,6 +524,9 @@
     + 'calendario in questo momento. Scrivici su WhatsApp per i prossimi appuntamenti.</p></div></li>';
 
   var tl = $('#timeline'), odAttesa = $('#openDayAttesa'), orAttesa = $('#orariAttesa');
+  /* Open Day spento dal foglio (o sportello muto): via tutto il riquadro, non "in arrivo" */
+  var odBox = $('.openday');
+  var togliOpenDay = function () { if (odBox && odBox.parentNode) odBox.parentNode.removeChild(odBox); };
 
   /* Oltre questo numero la lista diventa troppo lunga: si accorcia e scorre. */
   var EVENTI_VISTI = 5;
@@ -668,6 +671,7 @@
 
   if (window.fetch && (tl || odAttesa || orAttesa)) {
     attese.forEach(function (el) { el.style.visibility = 'hidden'; });
+    if (odBox) odBox.style.visibility = 'hidden';
     setTimeout(svela, 6000);                  /* se lo sportello non risponde proprio */
 
     /* senza scadenza una richiesta appesa non finisce mai nel catch e la lista
@@ -680,13 +684,15 @@
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (d) {
         if (tl) mostraEventi(d.eventi);
-        if (odAttesa && d.openDay && d.openDay.attivo) mostraOpenDay(d.openDay);
+        if (odAttesa && d.openDay && d.openDay.attivo) { mostraOpenDay(d.openDay); odBox.style.visibility = ''; }
+        else togliOpenDay();
         if (orAttesa && d.orari && d.orari.attivo) mostraOrari(d.orari.lezioni);
         svela();
       })['catch'](function () {
         /* il catch sta dopo il then, quindi prende anche gli errori del disegno:
            senza questa guardia cancellerebbe gli eventi appena scritti */
         if (tl && !tl.children.length) tl.innerHTML = GUASTO_EVENTI;
+        if (!odBox || odBox.style.visibility) togliOpenDay();
         svela();
       });
   }
